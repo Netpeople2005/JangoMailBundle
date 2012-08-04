@@ -12,6 +12,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
+
     /**
      * {@inheritDoc}
      */
@@ -19,11 +20,23 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('jango_mail');
-
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
-
+        /*
+         * Definimos los parametros de configuración que se especificarán
+         * para trabajar con jango_mail
+         */
+        $rootNode
+                ->children()
+                    ->scalarNode('username')
+                    ->end()
+                    ->scalarNode('password')
+                    ->end()
+                    ->scalarNode('fromemail')
+                    ->end()
+                    ->scalarNode('fromname')
+                    ->end()
+                ->end()
+        ;
         return $treeBuilder;
     }
+
 }

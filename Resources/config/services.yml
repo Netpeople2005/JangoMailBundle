@@ -4,10 +4,10 @@ parameters:
     jango_mail.transactional_sending.class: Netpeople\JangoMailBundle\TransactionalSending
     jango_mail.config:
           url_jango: http://api.jangomail.com/api.asmx?WSDL
-          username: usuario
-          password: clave
-          fromemail: correo@dominio.com
-          fromname: Manuel
+          username: ~
+          password: ~
+          fromemail: ~
+          fromname: ~
 
 services:
     jango_mail:
