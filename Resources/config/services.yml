@@ -1,0 +1,26 @@
+parameters:
+    jango_mail.class: Netpeople\JangoMailBundle\JangoMail
+    jango_mail.campaign_sending.class: Netpeople\JangoMailBundle\CampaignSending
+    jango_mail.transactional_sending.class: Netpeople\JangoMailBundle\TransactionalSending
+    jango_mail.config:
+          url_jango: http://api.jangomail.com/api.asmx?WSDL
+          username: usuario
+          password: clave
+          fromemail: correo@dominio.com
+          fromname: Manuel
+
+services:
+    jango_mail:
+        class: %jango_mail.class%
+        arguments: [%jango_mail.config%]
+        calls:
+            - [ setCampaign, [ "@jango_mail.campaign_sending" ] ]
+            - [ setTransactional, [ "@jango_mail.transactional_sending" ] ]
+
+    jango_mail.campaign_sending:
+        class: %jango_mail.campaign_sending.class%
+        arguments: ["@jango_mail"]
+
+    jango_mail.transactional_sending:
+        class: %jango_mail.transactional_sending.class%
+        arguments: ["@jango_mail"]
