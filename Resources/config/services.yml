@@ -2,6 +2,7 @@ parameters:
     jango_mail.class: Netpeople\JangoMailBundle\JangoMail
     jango_mail.campaign_sending.class: Netpeople\JangoMailBundle\CampaignSending
     jango_mail.transactional_sending.class: Netpeople\JangoMailBundle\TransactionalSending
+    jango_mail.group_management.class: Netpeople\JangoMailBundle\Groups\GroupManagement
     jango_mail.config:
           url_jango: http://api.jangomail.com/api.asmx?WSDL
           username: ~
@@ -16,6 +17,7 @@ services:
         calls:
             - [ setCampaign, [ "@jango_mail.campaign_sending" ] ]
             - [ setTransactional, [ "@jango_mail.transactional_sending" ] ]
+            - [ setGroupManagement, [ "@jango_mail.group_management" ] ]
 
     jango_mail.campaign_sending:
         class: %jango_mail.campaign_sending.class%
@@ -23,4 +25,8 @@ services:
 
     jango_mail.transactional_sending:
         class: %jango_mail.transactional_sending.class%
+        arguments: ["@jango_mail"]
+
+    jango_mail.group_management:
+        class: %jango_mail.group_management.class%
         arguments: ["@jango_mail"]
