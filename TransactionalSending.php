@@ -2,7 +2,7 @@
 
 namespace Netpeople\JangoMailBundle;
 
-use Netpeople\JangoMailBundle\Emails\EmailTemplateInterface;
+use Netpeople\JangoMailBundle\Emails\EmailInterface;
 use Netpeople\JangoMailBundle\JangoMail;
 use Netpeople\JangoMailBundle\Groups\Group;
 use Netpeople\JangoMailBundle\Recipients\RecipientInterface;
@@ -35,7 +35,7 @@ class TransactionalSending
         return $this->recipient;
     }
 
-    public function setEmail(EmailTemplateInterface $email)
+    public function setEmail(EmailInterface $email)
     {
         $this->email = $email;
         return $this;
@@ -66,7 +66,7 @@ class TransactionalSending
     public function send()
     {
         try {
-            if (!($this->getEmail() instanceof EmailTemplateInterface)) {
+            if (!($this->getEmail() instanceof EmailInterface)) {
                 throw new \Exception('Debe llamar a setEmail() antes de hacer el Envío');
             }
             if (!($this->getRecipient() instanceof Group)) {

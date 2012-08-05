@@ -2,12 +2,14 @@
 
 namespace Netpeople\JangoMailBundle\Emails;
 
+use Netpeople\JangoMailBundle\Groups\Group;
+
 /**
  * Description of EmailTemplateInterface
  *
  * @author manuel
  */
-interface EmailTemplateInterface
+interface EmailInterface
 {
 
     public function getSubject();
@@ -17,4 +19,9 @@ interface EmailTemplateInterface
     public function getMessagePlain();
 
     public function getOptions();
+
+    /**
+     * @return Group 
+     */
+    public function getGroup();
 }

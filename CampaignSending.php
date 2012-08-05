@@ -2,7 +2,7 @@
 
 namespace Netpeople\JangoMailBundle;
 
-use Netpeople\JangoMailBundle\Emails\EmailTemplateInterface;
+use Netpeople\JangoMailBundle\Emails\EmailInterface;
 use Netpeople\JangoMailBundle\JangoMail;
 use Netpeople\JangoMailBundle\Groups\Group;
 
@@ -15,7 +15,10 @@ class CampaignSending
 {
 
     protected $jangoMail = NULL;
-    protected $group = NULL;
+    /**
+     *
+     * @var EmailInterface 
+     */
     protected $email = NULL;
 
     public function __construct(JangoMail $jangoMail)
@@ -23,18 +26,7 @@ class CampaignSending
         $this->jangoMail = $jangoMail;
     }
 
-    public function setGroup(Group $group)
-    {
-        $this->group = $group;
-        return $this;
-    }
-
-    public function getGroup()
-    {
-        return $this->group;
-    }
-
-    public function setEmail(EmailTemplateInterface $email)
+    public function setEmail(EmailInterface $email)
     {
         $this->email = $email;
         return $this;
@@ -54,7 +46,7 @@ class CampaignSending
             'Password' => $config['password'],
             'FromEmail' => $config['fromemail'],
             'FromName' => $config['fromname'],
-            'toGroups' => $this->group->getName(),
+            'toGroups' => $this->email->getGroup()->getName(),
             'ToGroupFilter' => '', //por ahora nada
             'ToOther' => '', //por ahora nada
             'ToWebDatabase' => '', //por ahora nada
@@ -67,20 +59,20 @@ class CampaignSending
 
     public function send()
     {
-        if (!($this->getEmail() instanceof EmailTemplateInterface)) {
+        if (!($this->getEmail() instanceof EmailInterface)) {
             throw new \Exception('Debe llamar a setEmail() antes de hacer el Envío');
         }
-        if (!($this->getGroup() instanceof Group)) {
-            throw new \Exception('Debe llamar a setGroup() antes de hacer el Envío');
-        }
-        //try {
+//        if (!($this->getGroup() instanceof Group)) {
+//            throw new \Exception('Debe llamar a setGroup() antes de hacer el Envío');
+//        }
+        try {
             return $this->jangoMail->getJangoInstance()
                             ->SendMassEmail($this->getParametersToSend());
-//        } catch (SoapFault $e) {
-//            $this->jangoMail->setError($e->getMessage());
-//        } catch (\Exception $e) {
-//            $this->jangoMail->setError($e->getMessage());
-//        }
+        } catch (SoapFault $e) {
+            $this->jangoMail->setError($e->getMessage());
+        } catch (\Exception $e) {
+            $this->jangoMail->setError($e->getMessage());
+        }
         return FALSE;
     }
 

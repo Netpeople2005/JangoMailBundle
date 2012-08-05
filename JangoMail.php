@@ -43,6 +43,11 @@ class JangoMail
      * @var \SoapClient
      */
     protected $jangoClient = NULL;
+
+    /**
+     *
+     * @var string 
+     */
     protected $error;
 
     public function __construct($config)
@@ -50,6 +55,10 @@ class JangoMail
         $this->setConfig($config);
     }
 
+    /**
+     *
+     * @return \SoapClient 
+     */
     public function getJangoInstance()
     {
         if (!($this->jangoClient instanceof \SoapClient)) {
@@ -58,22 +67,40 @@ class JangoMail
         return $this->jangoClient;
     }
 
+    /**
+     *
+     * @param array $config
+     * @return \Netpeople\JangoMailBundle\JangoMail 
+     */
     public function setConfig($config)
     {
         $this->config = $config;
         return $this;
     }
 
+    /**
+     *
+     * @return array 
+     */
     public function getConfig()
     {
         return $this->config;
     }
 
+    /**
+     * 
+     * @return GroupAdmin 
+     */
     public function getGroupAdmin()
     {
         return $this->groupAdmin;
     }
 
+    /**
+     *
+     * @param GroupAdmin $group
+     * @return \Netpeople\JangoMailBundle\JangoMail 
+     */
     public function setGroupAdmin(GroupAdmin $group)
     {
         $this->groupAdmin = $group;
@@ -89,6 +116,11 @@ class JangoMail
         return $this->campaignSending;
     }
 
+    /**
+     *
+     * @param CampaignSending $campaign
+     * @return \Netpeople\JangoMailBundle\JangoMail 
+     */
     public function setCampaign(CampaignSending $campaign)
     {
         $this->campaignSending = $campaign;
@@ -110,18 +142,31 @@ class JangoMail
         return $this;
     }
 
-    public function send(Emails\EmailTemplateInterface $email, Groups\Group $group)
+    /**
+     *
+     * @param Emails\EmailInterface $email
+     * @return boolean 
+     */
+    public function send(Emails\EmailInterface $email)
     {
-        return $this->getCampaign()->setEmail($email)
-                        ->setGroup($group)->send();
+        return $this->getCampaign()->setEmail($email)->send();
     }
 
+    /**
+     *
+     * @param string $error
+     * @return \Netpeople\JangoMailBundle\JangoMail 
+     */
     public function setError($error)
     {
         $this->error = $error;
         return $this;
     }
 
+    /**
+     *
+     * @return string 
+     */
     public function getError()
     {
         return $this->error;
