@@ -16,31 +16,33 @@ class TransactionalSending
 {
 
     protected $jangoMail = NULL;
-    
     protected $recipient = NULL;
-    
     protected $email = NULL;
 
     public function __construct(JangoMail $jangoMail)
     {
         $this->jangoMail = $jangoMail;
     }
-    
-    public function setRecipient(RecipientInterface $recipient){
+
+    public function setRecipient(RecipientInterface $recipient)
+    {
         $this->recipient = $recipient;
         return $this;
     }
-    
-    public function getRecipient(){
+
+    public function getRecipient()
+    {
         return $this->recipient;
     }
-    
-    public function setEmail(EmailTemplateInterface $email){
+
+    public function setEmail(EmailTemplateInterface $email)
+    {
         $this->email = $email;
         return $this;
     }
-    
-    public function getEmail(){
+
+    public function getEmail()
+    {
         return $this->email;
     }
 
@@ -57,24 +59,27 @@ class TransactionalSending
             'Subject' => $this->email->getSubject(),
             'MessagePlain' => $this->email->getMessagePlain(),
             'MessageHTML' => $this->email->getMessageHtml(),
-            'Options' => $this->email->getOptions(),
+            //'Options' => $this->email->getOptions(),
         );
     }
 
     public function send()
     {
         try {
-            if ( !($this->getEmail() instanceof EmailTemplateInterface) ){
+            if (!($this->getEmail() instanceof EmailTemplateInterface)) {
                 throw new \Exception('Debe llamar a setEmail() antes de hacer el Envío');
             }
-            if ( !($this->getRecipient() instanceof Group) ){
+            if (!($this->getRecipient() instanceof Group)) {
                 throw new \Exception('Debe llamar a setRecipient() antes de hacer el Envío');
             }
             return $this->jangoMail->getJangoInstance()
                             ->SendTransactionalEmail($this->getParametersToSend());
         } catch (SoapFault $e) {
-            echo $e;
+            $this->jangoMail->setError($e->getMessage());
+        } catch (\Exception $e) {
+            $this->jangoMail->setError($e->getMessage());
         }
+        return FALSE;
     }
 
 }
