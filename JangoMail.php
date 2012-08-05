@@ -67,7 +67,7 @@ class JangoMail
 
     public function getGroupManagement()
     {
-        
+        return $this->groupManagement;        
     }
 
     public function setGroupManagement(GroupManagement $group)
