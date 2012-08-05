@@ -70,5 +70,4 @@ class Group
     {
         return $this->recipients;
     }
-
 }

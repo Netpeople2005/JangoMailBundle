@@ -5,13 +5,14 @@ namespace Netpeople\JangoMailBundle\Groups;
 use Netpeople\JangoMailBundle\Groups\Group;
 use Netpeople\JangoMailBundle\JangoMail;
 use Netpeople\JangoMailBundle\Recipients\RecipientInterface;
+use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceListInterface;
 
 /**
  * Description of GroupManagement
  *
  * @author manuel
  */
-class GroupAdmin
+class GroupAdmin implements ChoiceListInterface
 {
 
     /**
@@ -111,6 +112,20 @@ class GroupAdmin
             'Username' => $config['username'],
             'Password' => $config['password'],
                 ) + $aditionals;
+    }
+    /**
+     * Metodo Usado para devolver un arreglo con los grupos disponibles en
+     * JangoMail.
+     * 
+     * @return array 
+     */
+    public function getChoices()
+    {
+        $choices = array();
+        foreach($this->getGroups() as $group){
+            $choices[$group->getName()] = $group->getName();
+        }
+        return $choices;
     }
 
 }

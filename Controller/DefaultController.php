@@ -20,7 +20,7 @@ class DefaultController extends Controller
      */
     public function sendAction()
     {
-        $form = $this->createForm(new EmailCampaignType(), new Email());
+        $form = $this->createForm(new EmailCampaignType($this->get('jango_mail')->getGroupAdmin()), new Email());
 
         if ($this->getRequest()->getMethod() == 'POST') {
             if ($form->bindRequest($this->getRequest())->isValid()) {

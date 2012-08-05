@@ -5,6 +5,7 @@ namespace Netpeople\JangoMailBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilder;
 use Netpeople\JangoMailBundle\Form\Type\GroupType;
+use Netpeople\JangoMailBundle\Groups\GroupAdmin;
 
 /**
  * Description of EmailCampaign
@@ -14,9 +15,26 @@ use Netpeople\JangoMailBundle\Form\Type\GroupType;
 class EmailCampaignType extends AbstractType
 {
 
+    protected $groupAdmin = NULL;
+
+    public function __construct(GroupAdmin $groupAdmin)
+    {
+        $this->setGroupAdmin($groupAdmin);
+    }
+
+    public function getGroupAdmin()
+    {
+        return $this->groupAdmin;
+    }
+
+    public function setGroupAdmin($groupAdmin)
+    {
+        $this->groupAdmin = $groupAdmin;
+    }
+
     public function buildForm(FormBuilder $form, array $opciones)
     {
-        $form->add('group', new GroupType(), array(
+        $form->add('group', new GroupType($this->getGroupAdmin()), array(
                     'label' => 'Enviar al Grupo'
                 ))
                 ->add('subject', 'text', array(
@@ -33,7 +51,7 @@ class EmailCampaignType extends AbstractType
     {
         return 'EmailCampaign';
     }
-    
+
     public function getDefaultOptions(array $opciones)
     {
         return array(
