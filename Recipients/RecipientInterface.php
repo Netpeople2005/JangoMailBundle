@@ -13,4 +13,8 @@ interface RecipientInterface
     public function getEmail();
 
     public function getName();
+    
+    public function setGroup(\Netpeople\JangoMailBundle\Groups\Group $group);
+    
+    public function getGroup();
 }

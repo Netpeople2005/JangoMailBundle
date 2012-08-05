@@ -14,6 +14,7 @@ class Recipient implements RecipientInterface
 
     protected $email;
     protected $name;
+    protected $group;
     
     public function __construct($email = NULL,$name = NULL)
     {
@@ -41,6 +42,18 @@ class Recipient implements RecipientInterface
     public function getName()
     {
         return $this->name;
+    }
+
+    public function setGroup(\Netpeople\JangoMailBundle\Groups\Group $group)
+    {
+        
+        $this->group = $group;
+        return $this;
+    }
+
+    public function getGroup()
+    {
+        return $this->group;
     }
 
 }
