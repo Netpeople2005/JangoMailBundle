@@ -1,3 +1,7 @@
 JangoMailBundle_homepage:
     pattern:  /hello/{name}
     defaults: { _controller: JangoMailBundle:Default:index }
+    
+JangoMailBundle_sendMass:
+    pattern:  /send
+    defaults: { _controller: JangoMailBundle:Default:send }

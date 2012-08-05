@@ -1,0 +1,8 @@
+{% extends "::base.html.twig" %}
+{% block body %}
+    <h1>Probar envio de Correo a un grupo</h1>
+    <form action="{{ path('JangoMailBundle_sendMass') }}" method="post">
+        {{ form_widget(form) }}
+        <input type="submit" value="Enviar Correo" />
+    </form>
+{% endblock %}

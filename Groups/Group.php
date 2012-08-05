@@ -16,6 +16,11 @@ class Group
     protected $groupID;
     protected $memberCount;
 
+    function __construct($name = NULL)
+    {
+        $this->name = $name;
+    }
+
     /**
      * @var array
      */
