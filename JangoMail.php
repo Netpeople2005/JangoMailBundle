@@ -2,7 +2,7 @@
 
 namespace Netpeople\JangoMailBundle;
 
-use Netpeople\JangoMailBundle\Groups\GroupManagement;
+use Netpeople\JangoMailBundle\Groups\GroupAdmin;
 use Netpeople\JangoMailBundle\CampaignSending;
 use Netpeople\JangoMailBundle\TransactionalSending;
 
@@ -22,24 +22,28 @@ class JangoMail
 
     /**
      *
-     * @var GroupManagement
+     * @var GroupAdmin
      */
-    protected $groupManagement = NULL;
+    protected $groupAdmin = NULL;
+
     /**
      *
      * @var CampaignSending 
      */
     protected $campaignSending = NULL;
+
     /**
      *
      * @var TransactionalSending 
      */
     protected $transactionalSending = NULL;
+
     /**
      *
      * @var \SoapClient
      */
     protected $jangoClient = NULL;
+    protected $error;
 
     public function __construct($config)
     {
@@ -65,14 +69,14 @@ class JangoMail
         return $this->config;
     }
 
-    public function getGroupManagement()
+    public function getGroupAdmin()
     {
-        return $this->groupManagement;        
+        return $this->groupAdmin;
     }
 
-    public function setGroupManagement(GroupManagement $group)
+    public function setGroupAdmin(GroupAdmin $group)
     {
-        $this->groupManagement = $group;
+        $this->groupAdmin = $group;
         return $this;
     }
 
@@ -110,6 +114,17 @@ class JangoMail
     {
         return $this->getCampaign()->setEmail($email)
                         ->setGroup($group)->send();
+    }
+
+    public function setError($error)
+    {
+        $this->error = $error;
+        return $this;
+    }
+
+    public function getError()
+    {
+        return $this->error;
     }
 
 }
