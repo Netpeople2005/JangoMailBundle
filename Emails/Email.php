@@ -15,8 +15,8 @@ class Email implements EmailTemplateInterface
     protected $subject;
     protected $message;
     protected $options = array(
-        'OpenTrack' => true,
-        'ClickTrack' => true,
+        'OpenTrack' => 'True',
+        'ClickTrack' => 'True',
     );
 
     public function getMessageHtml()
