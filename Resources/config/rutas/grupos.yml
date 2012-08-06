@@ -1,3 +1,11 @@
 JangoMailBundle_Grupos_index:
     pattern: /
     defaults: { _controller: JangoMailBundle:Grupos:index }
+    
+JangoMailBundle_Grupos_crear:
+    pattern: /crear
+    defaults: { _controller: JangoMailBundle:Grupos:crear }
+    
+JangoMailBundle_Grupos_editar:
+    pattern: /editar/{grupoID}
+    defaults: { _controller: JangoMailBundle:Grupos:editar }

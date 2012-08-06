@@ -1,11 +1,20 @@
-{% extends "::base.html.twig" %}
-{% block body %}
+{% extends "JangoMailBundle::base.html.twig" %}
+{% block cuerpo %}
 <h1>Lista de Grupos en Jango</h1>
-<ul>
-{% for grupo in grupos %}
-        <li>{{ grupo.groupID }} - {{ grupo.name }} - ( {{ grupo.memberCount }} Miembros)</li>
-{% else %}
-        <li>No hay Grupos</li>
-{% endfor %}
-</ul>
+<table class="table table-bordered table-striped">
+    <tbody>
+        {% for grupo in grupos %}
+            <tr>
+                <td>{{ grupo.groupID }}</td>
+                <td>{{ grupo.name }}</td>
+                <td>{{ grupo.memberCount }} Miembros</td>
+                <td><a href="{{ path('JangoMailBundle_Grupos_editar') }}">Editar</a></td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="100">No hay Grupos</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

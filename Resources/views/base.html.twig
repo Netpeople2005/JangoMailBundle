@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>{% block title %} ADMINISTRACIÓN JANGOMAIL {% endblock %}</title>
+        {% block stylesheets  %}
+        <link type="text/css" rel="stylesheet" href="{{ asset('bundles/jangomail/css/bootstrap.min.css') }}" />
+        <link type="text/css" rel="stylesheet" href="{{ asset('bundles/jangomail/css/bootstrap-responsive.min.css') }}" />
+        {% endblock %}
+        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body>
+        {% block body %}
+            <header></header>
+            <article class="container">{% block cuerpo %}{% endblock %}</article>
+            <footer></footer>
+        {% endblock %}
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>
