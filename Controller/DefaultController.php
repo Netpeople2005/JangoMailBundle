@@ -26,7 +26,8 @@ class DefaultController extends Controller
 
         if ($this->getRequest()->getMethod() == 'POST') {
             if ($form->bindRequest($this->getRequest())->isValid()) {
-                var_dump($this->get('jango_mail')->send($form->getData()));
+                var_dump($form->getData());
+                //var_dump($this->get('jango_mail')->send($form->getData()));
             }
         }
 

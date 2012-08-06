@@ -11,7 +11,19 @@
     </head>
     <body>
         {% block body %}
-            <header></header>
+            <header>
+                <div class="navbar">
+                    <div class="navbar-inner">
+                        <div class="container">
+                            <ul class="nav">
+                                <li><a href="#">Grupos</a></li>
+                                <li><a href="#">Miembros</a></li>
+                                <li><a href="#">Reportes</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </header>
             <article class="container">{% block cuerpo %}{% endblock %}</article>
             <footer></footer>
         {% endblock %}

@@ -118,9 +118,11 @@ class GroupAdmin implements ChoiceListInterface
     public function getChoices()
     {
         $choices = array();
-        foreach ($this->getGroups() as $group) {
-            $choices[$group->getName()] = $group->getName();
-        }
+//        foreach ($this->getGroups() as $group) {
+//            $choices[$group->getName()] = $group->getName();
+//        }
+        $choices['hola'] = 'hola';
+        $choices['chao'] = 'chao';
         return $choices;
     }
 

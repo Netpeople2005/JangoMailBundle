@@ -4,7 +4,6 @@ namespace Netpeople\JangoMailBundle\Emails;
 
 use Netpeople\JangoMailBundle\Emails\EmailInterface;
 use Symfony\Component\Validator\Constraints\Type;
-//use Symfony\Component\Validator\Constraints\Collection as Collection;
 use Netpeople\JangoMailBundle\Groups\Group;
 
 /**

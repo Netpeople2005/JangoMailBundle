@@ -15,6 +15,10 @@ use Netpeople\JangoMailBundle\Groups\GroupAdmin;
 class EmailCampaignType extends AbstractType
 {
 
+    /**
+     *
+     * @var GroupAdmin 
+     */
     protected $groupAdmin = NULL;
 
     public function __construct(GroupAdmin $groupAdmin)
@@ -34,8 +38,9 @@ class EmailCampaignType extends AbstractType
 
     public function buildForm(FormBuilder $form, array $opciones)
     {
-        $form->add('group', new GroupType($this->getGroupAdmin()), array(
-                    'label' => 'Enviar al Grupo'
+        $form->add('group',new GroupChoiceType(), array(
+                    'label' => 'Enviar al Grupo',
+                    'choice_list' => $this->getGroupAdmin(),
                 ))
                 ->add('subject', 'text', array(
                     'label' => 'Asunto del Correo'

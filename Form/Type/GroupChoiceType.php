@@ -11,7 +11,7 @@ use Netpeople\JangoMailBundle\Groups\GroupAdmin;
  *
  * @author manuel
  */
-class GroupType extends AbstractType
+class GroupType extends \Symfony\Component\Form\Extension\Core\Type\ChoiceType
 {
 
     public function buildForm(FormBuilder $form, array $opciones)

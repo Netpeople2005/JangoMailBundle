@@ -1,8 +1,10 @@
 {% extends "JangoMailBundle::base.html.twig" %}
 {% block cuerpo %}
-<h1>Crear Grupo</h1>
+<div class="page-header">
+    <h1>Crear Grupo</h1>
+</div>
 <form action="{{ path('JangoMailBundle_Grupos_crear') }}" method="post">
      {{ form_widget(form) }}
-     <input type="submit" value="Enviar Form" />
+        <input type="submit" value="Enviar Form" class="btn btn-primary" />
 </form>
 {% endblock %}

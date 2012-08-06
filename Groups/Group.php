@@ -16,9 +16,7 @@ class Group
     protected $name;
     protected $groupID;
     protected $memberCount;
-
-    /**
-     * @Type(type="Netpeople\JangoMailBundle\Recipients\RecipientInterface")
+    /** 
      * @var array
      */
     protected $recipients = array();
