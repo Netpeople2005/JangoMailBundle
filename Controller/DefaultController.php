@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use \Netpeople\JangoMailBundle\Form\Type\EmailCampaignType;
 use Netpeople\JangoMailBundle\Emails\Email;
+use Netpeople\JangoMailBundle\Recipients\Recipient;
+use Netpeople\JangoMailBundle\Groups\Group;
 
 class DefaultController extends Controller
 {
@@ -29,6 +31,43 @@ class DefaultController extends Controller
         }
 
         return array('form' => $form->createView());
+    }
+
+    /**
+     * @Template() 
+     */
+    public function crearGrupoAction()
+    {
+        
+        
+        return array();
+    }
+
+    /**
+     * @Template() 
+     */
+    public function agregarMiembrosAction()
+    {
+        /* @var $adminGrupos \Netpeople\JangoMailBundle\Groups\GroupAdmin  */
+        $adminGrupos = $this->get('jango_mail')->getGroupAdmin();
+        
+        $grupo = new Group('pruebas');
+        
+        $grupo->addRecipient(new Recipient('correo1@hola.com','Manuel Trabajo'));
+        $grupo->addRecipient(new Recipient('correo2@hola.com','Manuel Trabajo'));
+        $grupo->addRecipient(new Recipient('correo3@hola.com','Manuel Trabajo'));
+        $grupo->addRecipient(new Recipient('correo4@hola.com','Manuel Trabajo'));
+        $grupo->addRecipient(new Recipient('correo5@hola.com','Manuel Trabajo'));
+        $grupo->addRecipient(new Recipient('correo6@hola.com','Manuel Trabajo'));
+        $grupo->addRecipient(new Recipient('correo7@hola.com','Manuel Trabajo'));
+        $grupo->addRecipient(new Recipient('correo8@hola.com','Manuel Trabajo'));
+        $grupo->addRecipient(new Recipient('correo9@hola.com','Manuel Trabajo'));
+        $grupo->addRecipient(new Recipient('correo10@hola.com','Manuel Trabajo'));
+        
+        var_dump($adminGrupos->addMembers($grupo));
+        
+        die;
+        return array();
     }
 
 }

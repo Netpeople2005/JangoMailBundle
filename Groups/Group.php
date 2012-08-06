@@ -3,6 +3,7 @@
 namespace Netpeople\JangoMailBundle\Groups;
 
 use Netpeople\JangoMailBundle\Recipients\RecipientInterface;
+use Symfony\Component\Validator\Constraints\Type;
 
 /**
  * Description of Group
@@ -16,15 +17,16 @@ class Group
     protected $groupID;
     protected $memberCount;
 
+    /**
+     * @Type(type="Netpeople\JangoMailBundle\Recipients\RecipientInterface")
+     * @var array
+     */
+    protected $recipients = array();
+
     function __construct($name = NULL)
     {
         $this->name = $name;
     }
-
-    /**
-     * @var array
-     */
-    protected $recipients;
 
     public function getName()
     {
@@ -66,8 +68,18 @@ class Group
         return $this;
     }
 
+    public function setRecipients($recipients)
+    {
+        $this->recipients = array();
+        foreach ($recipients as $e) {
+            $this->addRecipient($e);
+        }
+        return $this;
+    }
+
     public function getRecipients()
     {
         return $this->recipients;
     }
+
 }

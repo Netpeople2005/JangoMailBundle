@@ -42,24 +42,29 @@ class GroupAdmin implements ChoiceListInterface
         return FALSE;
     }
 
-    public function addMember(Group $group, RecipientInterface $recipient)
+    public function addMembers(Group $group)
     {
         $params = $this->prepareParameters(array(
             'GroupName' => $group->getName(),
-            'EmailAddress' => $recipient->getEmail(),
             'FieldNames' => array('Name'),
-            'FieldValues' => array($recipient->getName()),
                 ));
 
-        try {
-            return $this->jangoMail->getJangoInstance()
-                            ->AddGroupMember($params);
-        } catch (SoapFault $e) {
-            $this->jangoMail->setError($e->getMessage());
-        } catch (\Exception $e) {
-            $this->jangoMail->setError($e->getMessage());
+        $results = array();
+        foreach ($group->getRecipients() as $e) {
+            $params['EmailAddress'] = $e->getEmail();
+            $params['FieldValues'] = array($e->getName());
+            try {
+                $results[] = $this->jangoMail->getJangoInstance()
+                        ->AddGroupMember($params);
+            } catch (SoapFault $e) {
+                $this->jangoMail->setError($e->getMessage());
+                return FALSE;
+            } catch (\Exception $e) {
+                $this->jangoMail->setError($e->getMessage());
+                return FALSE;
+            }
         }
-        return FALSE;
+        return $results;
     }
 
     public function countMembers(Group $group)
@@ -104,15 +109,6 @@ class GroupAdmin implements ChoiceListInterface
         return FALSE;
     }
 
-    protected function prepareParameters(array $aditionals = array())
-    {
-        $config = $this->jangoMail->getConfig();
-
-        return array(
-            'Username' => $config['username'],
-            'Password' => $config['password'],
-                ) + $aditionals;
-    }
     /**
      * Metodo Usado para devolver un arreglo con los grupos disponibles en
      * JangoMail.
@@ -122,10 +118,20 @@ class GroupAdmin implements ChoiceListInterface
     public function getChoices()
     {
         $choices = array();
-        foreach($this->getGroups() as $group){
+        foreach ($this->getGroups() as $group) {
             $choices[$group->getName()] = $group->getName();
         }
         return $choices;
+    }
+
+    protected function prepareParameters(array $aditionals = array())
+    {
+        $config = $this->jangoMail->getConfig();
+
+        return array(
+            'Username' => $config['username'],
+            'Password' => $config['password'],
+                ) + $aditionals;
     }
 
 }

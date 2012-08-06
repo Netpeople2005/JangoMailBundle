@@ -5,3 +5,11 @@ JangoMailBundle_homepage:
 JangoMailBundle_sendMass:
     pattern:  /send
     defaults: { _controller: JangoMailBundle:Default:send }
+    
+JangoMailBundle_agregarMiembros:
+    pattern:  /add_members
+    defaults: { _controller: JangoMailBundle:Default:agregarMiembros }
+
+JangoMailBundle_Grupos:
+    resource: "@JangoMailBundle/Resources/config/rutas/grupos.yml"
+    prefix:  /grupos

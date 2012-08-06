@@ -22,11 +22,14 @@ services:
     jango_mail.campaign_sending:
         class: %jango_mail.campaign_sending.class%
         arguments: ["@jango_mail"]
+        public: false
 
     jango_mail.transactional_sending:
         class: %jango_mail.transactional_sending.class%
         arguments: ["@jango_mail"]
+        public: false
 
     jango_mail.group_admin:
         class: %jango_mail.group_admin.class%
         arguments: ["@jango_mail"]
+        public: false

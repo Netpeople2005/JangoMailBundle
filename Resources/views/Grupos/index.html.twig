@@ -1,0 +1,11 @@
+{% extends "::base.html.twig" %}
+{% block body %}
+<h1>Lista de Grupos en Jango</h1>
+<ul>
+{% for grupo in grupos %}
+        <li>{{ grupo.groupID }} - {{ grupo.name }} - ( {{ grupo.memberCount }} Miembros)</li>
+{% else %}
+        <li>No hay Grupos</li>
+{% endfor %}
+</ul>
+{% endblock %}

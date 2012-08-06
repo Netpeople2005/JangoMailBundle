@@ -1,0 +1,3 @@
+JangoMailBundle_Grupos_index:
+    pattern: /
+    defaults: { _controller: JangoMailBundle:Grupos:index }
