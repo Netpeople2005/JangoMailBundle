@@ -46,7 +46,7 @@ class CampaignSending
             'Password' => $config['password'],
             'FromEmail' => $config['fromemail'],
             'FromName' => $config['fromname'],
-            'toGroups' => $this->email->getGroup()->getName(),
+            'ToGroups' => $this->email->getGroup()->getName(),
             'ToGroupFilter' => '', //por ahora nada
             'ToOther' => '', //por ahora nada
             'ToWebDatabase' => '', //por ahora nada

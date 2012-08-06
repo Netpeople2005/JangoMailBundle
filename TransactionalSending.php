@@ -30,6 +30,10 @@ class TransactionalSending
         return $this;
     }
 
+    /**
+     *
+     * @return RecipientInterface 
+     */
     public function getRecipient()
     {
         return $this->recipient;
@@ -55,7 +59,7 @@ class TransactionalSending
             'Password' => $config['password'],
             'FromEmail' => $config['fromemail'],
             'FromName' => $config['fromname'],
-            'toEmailAddress' => $this->getRecipient(),
+            'ToEmailAddress' => $this->getRecipient()->getEmail(),
             'Subject' => $this->email->getSubject(),
             'MessagePlain' => $this->email->getMessagePlain(),
             'MessageHTML' => $this->email->getMessageHtml(),
@@ -69,7 +73,7 @@ class TransactionalSending
             if (!($this->getEmail() instanceof EmailInterface)) {
                 throw new \Exception('Debe llamar a setEmail() antes de hacer el Envío');
             }
-            if (!($this->getRecipient() instanceof Group)) {
+            if (!($this->getRecipient() instanceof RecipientInterface)) {
                 throw new \Exception('Debe llamar a setRecipient() antes de hacer el Envío');
             }
             return $this->jangoMail->getJangoInstance()
