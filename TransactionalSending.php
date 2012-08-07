@@ -27,12 +27,6 @@ class TransactionalSending
      */
     protected $email = NULL;
 
-    /**
-     *
-     * @var boolean 
-     */
-    private $isTEST = FALSE;
-
     public function __construct(JangoMail $jangoMail)
     {
         $this->jangoMail = $jangoMail;
@@ -58,11 +52,13 @@ class TransactionalSending
             'Password' => $config['password'],
             'FromEmail' => $config['fromemail'],
             'FromName' => $config['fromname'],
-            'ToEmailAddress' => $$recipient->getEmail(),
+            'ToEmailAddress' => $recipient->getEmail(),
             'Subject' => $this->email->getSubject(),
             'MessagePlain' => $this->email->getMessagePlain(),
             'MessageHTML' => $this->email->getMessageHtml(),
-            'Options' => $this->email->getOptionsString(),
+            'Options' => $this->email->getOptionsString(array(
+                'BCC' => join(';', $config['bcc'])
+            )),
         );
     }
 
@@ -71,57 +67,42 @@ class TransactionalSending
         if (!($this->getEmail() instanceof EmailInterface)) {
             throw new \Exception('Debe llamar a setEmail() antes de hacer el Envío');
         }
+        //si está desabilitado el envio, quitamos los destinatarios
+        //y agregamos un test
+        if (TRUE === $this->jangoMail->getConfig('disable_delivery')) {
+            //si hay correos de prueba definidos en el config.yml
+            //colocamos a uno de ellos como destinatario.
+            if (count($this->jangoMail->getConfig('bcc'))) {
+                $this->getEmail()->setRecipients(array(
+                    new Recipient(current($this->jangoMail->getConfig('bcc')))
+                ));
+            } else {
+                //si no hay a quien enviar, no lo enviamos.
+                $this->email->setEmailID('- TEST -');
+                return $this->email;
+            }
+        }
         if (!count($this->getEmail()->getRecipients())) {
             throw new \Exception('Debe especificar al menos un Recipient antes de hacer el Envío');
         }
         try {
-            //verificamos que se pueda mandar el correo
-            if (FALSE === $this->jangoMail->getConfig('disable_delivery') || $this->isTEST) {
-                $this->isTEST = FALSE;
-                foreach ($this->getEmail()->getRecipients() as $recipient) {
-                    $response = $this->jangoMail->getJangoInstance()
-                            ->SendTransactionalEmail($this->getParametersToSend($recipient));
-                }
-                $response = explode('\n', $response->SendTransactionalEmailResult);
-            } else {
-                //si está desabilitado el envio, retormanos una respuesta de prueba :-)
-                $response = array(0, 'SUCCESS', '-TEST-');
+            foreach ($this->getEmail()->getRecipients() as $recipient) {
+                $response = $this->jangoMail->getJangoInstance()
+                        ->SendTransactionalEmail($this->getParametersToSend($recipient));
             }
+            $response = preg_split('/\n/m', $response->SendTransactionalEmailResult);
 
             if (0 == $response[0]) {
                 $this->email->setEmailID($response[2]);
 
-                $emailResult = $this->email;
-
-                //enviamos el correo a los emails de prueba
-                $this->sendToTesters(clone $this->getEmail());
-
-                return $emailResult;
+                return $this->email;
             } else {
                 $this->jangoMail->setError("No se pudo enviar el Correo (Asunto: {$this->email->getSubject()})");
             }
         } catch (\Exception $e) {
             $this->jangoMail->setError($e->getMessage());
         }
-        $this->isTEST = FALSE;
         return FALSE;
-    }
-
-    /**
-     *
-     * @param Emails\EmailInterface $email
-     * @return boolean 
-     */
-    public function sendToTesters(EmailInterface $email)
-    {
-        if (count($this->jangoMail->getConfig('emails_bcc'))) {
-            $email->setRecipients(array());
-            foreach ($this->jangoMail->getConfig('emails_bcc') as $bcc) {
-                $email->addRecipient(new Recipient($bcc));
-            }
-            $this->isTEST = TRUE;
-            $this->setEmail($email)->send();
-        }
     }
 
 }

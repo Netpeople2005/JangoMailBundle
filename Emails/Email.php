@@ -49,10 +49,7 @@ class Email implements EmailInterface
      *
      * @var array 
      */
-    protected $options = array(
-        'OpenTrack' => 'True',
-        'ClickTrack' => 'True',
-    );
+    protected $options = array();
 
     public function getEmailID()
     {
@@ -94,9 +91,9 @@ class Email implements EmailInterface
         return $this->options;
     }
 
-    public function getOptionsString(array $options)
+    public function getOptionsString(array $options = array())
     {
-        $options = array();
+        $this->options += $options;
         foreach ($this->options as $index => $value) {
             $options[] = "$index=$value";
         }

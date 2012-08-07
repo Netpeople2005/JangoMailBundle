@@ -9,3 +9,7 @@ JangoMailBundle_Grupos_crear:
 JangoMailBundle_Grupos_editar:
     pattern: /editar/{grupoID}
     defaults: { _controller: JangoMailBundle:Grupos:editar }
+    
+JangoMailBundle_Grupos_Miembros:
+    pattern: /{grupoID}/miembros
+    defaults: { _controller: JangoMailBundle:Grupos:miembros }

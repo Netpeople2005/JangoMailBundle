@@ -31,7 +31,7 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('fromemail')->end()
                     ->scalarNode('fromname')->end()
                     ->scalarNode('disable_delivery')->defaultValue(false)->end()
-                    ->arrayNode('emails_bcc')
+                    ->arrayNode('bcc')
                         ->prototype('scalar')->end()
                     ->end()
                 ->end()

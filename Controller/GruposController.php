@@ -83,4 +83,23 @@ class GruposController extends Controller
         );
     }
 
+    /**
+     * @Template()
+     * @return type 
+     */
+    public function miembrosAction($grupoID)
+    {
+        /* @var $adminGrupos \Netpeople\JangoMailBundle\Groups\GroupAdmin */
+        $adminGrupos = $this->get('jango_mail')->getGroupAdmin();
+        
+        $grupo = $adminGrupos->getGroupByGroupID($grupoID);
+        
+        $miembros = $adminGrupos->getMembers($grupo);
+
+        return array(
+            'miembros' => $miembros,
+            'grupo' => $grupo,
+        );
+    }
+
 }

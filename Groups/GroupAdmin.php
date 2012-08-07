@@ -4,7 +4,7 @@ namespace Netpeople\JangoMailBundle\Groups;
 
 use Netpeople\JangoMailBundle\Groups\Group;
 use Netpeople\JangoMailBundle\JangoMail;
-use Netpeople\JangoMailBundle\Recipients\RecipientInterface;
+use Netpeople\JangoMailBundle\Recipients\Recipient;
 use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceListInterface;
 
 /**
@@ -71,7 +71,7 @@ class GroupAdmin implements ChoiceListInterface
         try {
             $response = $this->jangoMail->getJangoInstance()
                     ->Groups_Rename($params);
-            $response = explode('\n', $response->AddGroupResult);
+            $response = preg_split('/\n/m', $response->AddGroupResult);
             if (0 == $response[0]) {
                 return $response[2]; //el id del grupo
             }
@@ -109,13 +109,15 @@ class GroupAdmin implements ChoiceListInterface
                 ));
 
         $results = array();
+                
         foreach ($group->getRecipients() as $e) {
             $params['EmailAddress'] = $e->getEmail();
             $params['FieldValues'] = array($e->getName());
             try {
                 $response = $this->jangoMail->getJangoInstance()
                         ->AddGroupMember($params);
-                $response = explode('\n', $response->ddGroupMemberResult);
+                $response = preg_split('/\n/m', $response->AddGroupMemberResult);
+                var_dump($response);
                 if (0 == $response[0]) {
                     $results[$response[2]] = $e;
                 } else {
@@ -123,6 +125,7 @@ class GroupAdmin implements ChoiceListInterface
                 }
             } catch (\Exception $e) {
                 $this->jangoMail->setError($e->getMessage());
+                return FALSE;
             }
         }
         if (count($results) === count($group->getRecipients())) {
@@ -176,6 +179,34 @@ class GroupAdmin implements ChoiceListInterface
                         ->setMemberCount((string) $e->MemberCount);
             }
             return $groups;
+        } catch (SoapFault $e) {
+            $this->jangoMail->setError($e->getMessage());
+        } catch (\Exception $e) {
+            $this->jangoMail->setError($e->getMessage());
+        }
+        return FALSE;
+    }
+    
+    /**
+     *
+     * @return boolean 
+     */
+    public function getMembers(Group $group)
+    {
+        $params = $this->prepareParameters(array(
+            'GroupName' => $group->getName()
+        ));
+
+        try {
+            $response = $this->jangoMail->getJangoInstance()
+                    ->Groups_GetMembers_XML($params);
+            $xml = $response->Groups_GetMembers_XMLResult->any;
+            $recipients = array();
+            foreach (simplexml_load_string($xml)->GroupMembers as $e) {
+                $recipient = new Recipient((string) $e->emailaddress);
+                $recipients[] = $recipient->setGroup($group);
+            }
+            return $recipients;
         } catch (SoapFault $e) {
             $this->jangoMail->setError($e->getMessage());
         } catch (\Exception $e) {

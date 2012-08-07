@@ -25,7 +25,7 @@ interface EmailInterface
 
     public function getOptions($name = NULL);
 
-    public function getOptionsString(array $options);
+    public function getOptionsString(array $options = array());
 
     public function getGroups();
 

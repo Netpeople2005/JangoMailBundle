@@ -59,7 +59,9 @@ class CampaignSending
             'Subject' => $this->email->getSubject(),
             'MessagePlain' => $this->email->getMessagePlain(),
             'MessageHTML' => $this->email->getMessageHtml(),
-            'Options' => $this->email->getOptionsString(),
+            'Options' => $this->email->getOptionsString(array(
+                'BCC' => join(';', $config['bcc'])
+            )),
         );
     }
 
@@ -68,29 +70,24 @@ class CampaignSending
         if (!($this->getEmail() instanceof EmailInterface)) {
             throw new \Exception('Debe llamar a setEmail() antes de hacer el Envío');
         }
-        if (!count($this->getGroups())) {
+        if (!count($this->getEmail()->getGroups())) {
             throw new \Exception('Debe agregar al menos un grupo antes de hacer el Envío');
         }
         try {
-            //verificamos que se pueda mandar el correo
-            if (FALSE === $this->jangoMail->getConfig('disable_delivery')) {
-                $response = $this->jangoMail->getJangoInstance()
-                        ->SendMassEmail($this->getParametersToSend());
-                $response = explode('\n', $response->SendMassEmailResult);
-            } else {
-                //si está desabilitado el envio, retormanos una respuesta de prueba :-)
-                $response = array(0, 'SUCCESS', '-TEST-');
+            //si está desabilitado el envio, lo enviamos como como transactional
+            //a un correo test
+            if (TRUE === $this->jangoMail->getConfig('disable_delivery')) {
+                return $this->jangoMail->getTransactional()
+                                ->setEmail($this->getEmail())->send();
             }
+            $response = $this->jangoMail->getJangoInstance()
+                    ->SendMassEmail($this->getParametersToSend());
+            $response = preg_split('/\n/m', $response->SendMassEmailResult);
 
             if (0 == $response[0]) {
                 $this->email->setEmailID($response[2]);
 
-                $emailResult = $this->email;
-                
-                //enviamos el correo a los emails de prueba
-                $this->jangoMail->getTransactional()->sendToTesters(clone $this->getEmail());
-
-                return $emailResult;
+                return $this->email;
             } else {
                 $this->jangoMail->setError("No se pudo enviar el Correo (Asunto: {$this->email->getSubject()})");
             }

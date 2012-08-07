@@ -16,10 +16,17 @@ class DefaultController extends Controller
     {
         $email = new Email();
         
-        $email->addRecipient(new Recipient('manuel_j555@hotmail.com'))
-                ->setMessage('el mensaje')->setSubject('el asunto');
-                
-        var_dump($this->get('jango_mail')->send($email));
+        var_dump($this->get('jango_mail')->getGroupAdmin()->getMembers(new Group('test')));
+        
+//        $email->addRecipient(new Recipient('manuel_j555@hotmail.com'))
+//                ->setMessage('el mensaje<h3>Ahora con entrega desabilitada :-)</h3>')
+//                ->setSubject('el asunto');
+//        $email->addGroup(new Group('test'))
+//                ->setMessage('Enviando un mensaje a un grupo :-) con correos ocultos')
+//                ->setSubject('el asunto del mensaje al grupooooo son las 2:05 pm');
+//                
+//        var_dump($this->get('jango_mail')->send($email));
+//        var_dump($this->get('jango_mail')->getError());
         
         
         return $this->render('JangoMailBundle:Default:index.html.twig', array('name' => $name));
@@ -60,14 +67,15 @@ class DefaultController extends Controller
         /* @var $adminGrupos \Netpeople\JangoMailBundle\Groups\GroupAdmin  */
         $adminGrupos = $this->get('jango_mail')->getGroupAdmin();
         
-        $grupo = new Group('pruebas');
+        $grupo = new Group('test');
         
-        $grupo->addRecipient(new Recipient('correo1@hola.com','Manuel Trabajo'));
-        $grupo->addRecipient(new Recipient('correo2@hola.com','Manuel Trabajo'));
-        $grupo->addRecipient(new Recipient('correo3@hola.com','Manuel Trabajo'));
-        $grupo->addRecipient(new Recipient('correo4@hola.com','Manuel Trabajo'));
+        $grupo->addRecipient(new Recipient('programador.manuel@gmail.com'));
+        $grupo->addRecipient(new Recipient('apatino@odeveloper.com'));
+        $grupo->addRecipient(new Recipient('ohernandez@odeveloper.com'));
+        $grupo->addRecipient(new Recipient('jcardozo@odeveloper.com'));
         
         var_dump($adminGrupos->addMembers($grupo));
+        var_dump($this->get('jango_mail')->getError());
         
         die;
         return array();
