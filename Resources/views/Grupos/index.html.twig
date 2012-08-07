@@ -1,6 +1,10 @@
 {% extends "JangoMailBundle::base.html.twig" %}
 {% block cuerpo %}
 <h1>Lista de Grupos en Jango</h1>
+{% for tipo, mensaje in app.session.getFlashes() %}
+    <div class="alert alert-{{ tipo }}">{{ mensaje }}</div>
+{% endfor %}
+    <p><a href="{{ path("JangoMailBundle_Grupos_crear") }}" class="btn btn-primary">Crear Grupo</a></p>
 <table class="table table-bordered table-striped">
     <tbody>
         {% for grupo in grupos %}
@@ -8,7 +12,7 @@
                 <td>{{ grupo.groupID }}</td>
                 <td>{{ grupo.name }}</td>
                 <td>{{ grupo.memberCount }} Miembros</td>
-                <td><a href="{{ path('JangoMailBundle_Grupos_editar') }}">Editar</a></td>
+                <!--<td><a href="{ { path('JangoMailBundle_Grupos_editar',{ 'grupoID': grupo.groupID }) }}">Editar</a></td>-->
             </tr>
         {% else %}
             <tr>

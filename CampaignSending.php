@@ -15,6 +15,7 @@ class CampaignSending
 {
 
     protected $jangoMail = NULL;
+
     /**
      *
      * @var EmailInterface 
@@ -41,19 +42,24 @@ class CampaignSending
     {
         $config = $this->jangoMail->getConfig();
 
+        $toGroups = array();
+        foreach ($this->email->getGroups() as $group) {
+            $toGroups[] = $group->getName();
+        }
+
         return array(
             'Username' => $config['username'],
             'Password' => $config['password'],
             'FromEmail' => $config['fromemail'],
             'FromName' => $config['fromname'],
-            'ToGroups' => $this->email->getGroup()->getName(),
+            'ToGroups' => join(',', $toGroups),
             'ToGroupFilter' => '', //por ahora nada
             'ToOther' => '', //por ahora nada
             'ToWebDatabase' => '', //por ahora nada
             'Subject' => $this->email->getSubject(),
             'MessagePlain' => $this->email->getMessagePlain(),
             'MessageHTML' => $this->email->getMessageHtml(),
-            //'Options' => $this->email->getOptions(),
+            'Options' => $this->email->getOptionsString(),
         );
     }
 
@@ -62,14 +68,32 @@ class CampaignSending
         if (!($this->getEmail() instanceof EmailInterface)) {
             throw new \Exception('Debe llamar a setEmail() antes de hacer el Envío');
         }
-//        if (!($this->getGroup() instanceof Group)) {
-//            throw new \Exception('Debe llamar a setGroup() antes de hacer el Envío');
-//        }
+        if (!count($this->getGroups())) {
+            throw new \Exception('Debe agregar al menos un grupo antes de hacer el Envío');
+        }
         try {
-            return $this->jangoMail->getJangoInstance()
-                            ->SendMassEmail($this->getParametersToSend());
-        } catch (SoapFault $e) {
-            $this->jangoMail->setError($e->getMessage());
+            //verificamos que se pueda mandar el correo
+            if (FALSE === $this->jangoMail->getConfig('disable_delivery')) {
+                $response = $this->jangoMail->getJangoInstance()
+                        ->SendMassEmail($this->getParametersToSend());
+                $response = explode('\n', $response->SendMassEmailResult);
+            } else {
+                //si está desabilitado el envio, retormanos una respuesta de prueba :-)
+                $response = array(0, 'SUCCESS', '-TEST-');
+            }
+
+            if (0 == $response[0]) {
+                $this->email->setEmailID($response[2]);
+
+                $emailResult = $this->email;
+                
+                //enviamos el correo a los emails de prueba
+                $this->jangoMail->getTransactional()->sendToTesters(clone $this->getEmail());
+
+                return $emailResult;
+            } else {
+                $this->jangoMail->setError("No se pudo enviar el Correo (Asunto: {$this->email->getSubject()})");
+            }
         } catch (\Exception $e) {
             $this->jangoMail->setError($e->getMessage());
         }

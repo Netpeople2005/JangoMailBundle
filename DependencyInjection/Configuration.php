@@ -26,13 +26,13 @@ class Configuration implements ConfigurationInterface
          */
         $rootNode
                 ->children()
-                    ->scalarNode('username')
-                    ->end()
-                    ->scalarNode('password')
-                    ->end()
-                    ->scalarNode('fromemail')
-                    ->end()
-                    ->scalarNode('fromname')
+                    ->scalarNode('username')->end()
+                    ->scalarNode('password')->end()
+                    ->scalarNode('fromemail')->end()
+                    ->scalarNode('fromname')->end()
+                    ->scalarNode('disable_delivery')->defaultValue(false)->end()
+                    ->arrayNode('emails_bcc')
+                        ->prototype('scalar')->end()
                     ->end()
                 ->end()
         ;

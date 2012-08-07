@@ -14,6 +14,14 @@ class DefaultController extends Controller
 
     public function indexAction($name)
     {
+        $email = new Email();
+        
+        $email->addRecipient(new Recipient('manuel_j555@hotmail.com'))
+                ->setMessage('el mensaje')->setSubject('el asunto');
+                
+        var_dump($this->get('jango_mail')->send($email));
+        
+        
         return $this->render('JangoMailBundle:Default:index.html.twig', array('name' => $name));
     }
 
@@ -58,12 +66,6 @@ class DefaultController extends Controller
         $grupo->addRecipient(new Recipient('correo2@hola.com','Manuel Trabajo'));
         $grupo->addRecipient(new Recipient('correo3@hola.com','Manuel Trabajo'));
         $grupo->addRecipient(new Recipient('correo4@hola.com','Manuel Trabajo'));
-        $grupo->addRecipient(new Recipient('correo5@hola.com','Manuel Trabajo'));
-        $grupo->addRecipient(new Recipient('correo6@hola.com','Manuel Trabajo'));
-        $grupo->addRecipient(new Recipient('correo7@hola.com','Manuel Trabajo'));
-        $grupo->addRecipient(new Recipient('correo8@hola.com','Manuel Trabajo'));
-        $grupo->addRecipient(new Recipient('correo9@hola.com','Manuel Trabajo'));
-        $grupo->addRecipient(new Recipient('correo10@hola.com','Manuel Trabajo'));
         
         var_dump($adminGrupos->addMembers($grupo));
         

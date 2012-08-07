@@ -37,8 +37,7 @@ class JangoMailExtension extends Extension
         if (!isset($config['fromname']) || empty($config['fromname'])){
             throw new \InvalidArgumentException('El parametro <b>fromname</b> es necesario para trabajar con JangoMail');
         }
-        
-
+                
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
         

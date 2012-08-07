@@ -63,6 +63,7 @@ class JangoMail
     {
         if (!($this->jangoClient instanceof \SoapClient)) {
             $this->jangoClient = new \SoapClient($this->config['url_jango']);
+            //var_dump($this->jangoClient,$this->config['url_jango']);die;
         }
         return $this->jangoClient;
     }
@@ -82,8 +83,12 @@ class JangoMail
      *
      * @return array 
      */
-    public function getConfig()
+    public function getConfig($name = NULL)
     {
+        if ($name) {
+            return array_key_exists($name, $this->config) ?
+                    $this->config[$name] : NULL;
+        }
         return $this->config;
     }
 
@@ -149,7 +154,17 @@ class JangoMail
      */
     public function send(Emails\EmailInterface $email)
     {
-        return $this->getCampaign()->setEmail($email)->send();
+        /*
+         * primero verificamos si tiene grupos establecidos, si es así
+         * enviamos el correo como campaña
+         */
+        if (count($email->getGroups())) {
+            return $this->getCampaign()->setEmail($email)->send();
+        } elseif (count($email->getRecipients())) {
+            return $this->getTransactional()->setEmail($email)->send();            
+        }else{
+            //aqui debemos informar que pasó
+        }
     }
 
     /**

@@ -16,6 +16,7 @@ class GroupAdmin implements ChoiceListInterface
 {
 
     /**
+     * Contiene el servicio JangoMail
      *
      * @var JangoMail 
      */
@@ -26,22 +27,80 @@ class GroupAdmin implements ChoiceListInterface
         $this->jangoMail = $jangoMail;
     }
 
+    /**
+     * Agrega un Grupo a jango
+     * @param Group $group
+     * @return boolean|Group el grupo creado ó false si hay error
+     */
     public function addGroup(Group $group)
     {
         $params = $this->prepareParameters(array(
             'GroupName' => $group->getName(),
                 ));
         try {
-            return $this->jangoMail->getJangoInstance()
-                            ->AddGroup($params);
-        } catch (SoapFault $e) {
-            $this->jangoMail->setError($e->getMessage());
+            $response = $this->jangoMail->getJangoInstance()
+                    ->AddGroup($params);
+            $response = preg_split('/\n/m', $response->AddGroupResult);
+            if (0 == $response[0]) {
+                return $group->setGroupID($response[2]);
+            } else {
+                $this->jangoMail->setError("No se pudo crear el Grupo");
+            }
         } catch (\Exception $e) {
             $this->jangoMail->setError($e->getMessage());
         }
         return FALSE;
     }
 
+    /**
+     * Este metodo no funciona del todo bien, ya que está creando un nuevo grupo
+     * en ves de editar. No usar por ahora
+     * 
+     * @deprecated
+     *
+     * @param Group $group
+     * @param type $newName
+     * @return boolean 
+     */
+    public function editGroup(Group $group, $newName)
+    {
+        $params = $this->prepareParameters(array(
+            'OldGroupName' => $group->getName(),
+            'NewGroupName' => $newName,
+                ));
+        try {
+            $response = $this->jangoMail->getJangoInstance()
+                    ->Groups_Rename($params);
+            $response = explode('\n', $response->AddGroupResult);
+            if (0 == $response[0]) {
+                return $response[2]; //el id del grupo
+            }
+        } catch (\Exception $e) {
+            $this->jangoMail->setError($e->getMessage());
+        }
+        return FALSE;
+    }
+
+    /**
+     * Obtiene un grupo a travez del ID del mismo.
+     * @param string $groupID
+     * @return Group|NULL el grupo encontrado ó nulo si no existe.
+     */
+    public function getGroupByGroupID($groupID)
+    {
+        foreach ($this->getGroups() as $group) {
+            if ($groupID == $group->getGroupID()) {
+                return $group;
+            }
+        }
+        return NULL;
+    }
+
+    /**
+     * Agrega Miembros a un grupo.
+     * @param Group $group clase grupo con los miembros establecidos.
+     * @return boolean 
+     */
     public function addMembers(Group $group)
     {
         $params = $this->prepareParameters(array(
@@ -54,19 +113,31 @@ class GroupAdmin implements ChoiceListInterface
             $params['EmailAddress'] = $e->getEmail();
             $params['FieldValues'] = array($e->getName());
             try {
-                $results[] = $this->jangoMail->getJangoInstance()
+                $response = $this->jangoMail->getJangoInstance()
                         ->AddGroupMember($params);
-            } catch (SoapFault $e) {
-                $this->jangoMail->setError($e->getMessage());
-                return FALSE;
+                $response = explode('\n', $response->ddGroupMemberResult);
+                if (0 == $response[0]) {
+                    $results[$response[2]] = $e;
+                } else {
+                    break;
+                }
             } catch (\Exception $e) {
                 $this->jangoMail->setError($e->getMessage());
-                return FALSE;
             }
         }
-        return $results;
+        if (count($results) === count($group->getRecipients())) {
+            return $results;
+        } else {
+            $this->jangoMail->setError("No se Pudieron Guardar todos los Destinatarios");
+            return FALSE;
+        }
     }
 
+    /**
+     * Devuelve el numero de miebros que posee un grupo
+     * @param Group $group
+     * @return boolean 
+     */
     public function countMembers(Group $group)
     {
         $params = $this->prepareParameters(array(
@@ -85,6 +156,10 @@ class GroupAdmin implements ChoiceListInterface
         return FALSE;
     }
 
+    /**
+     *
+     * @return boolean 
+     */
     public function getGroups()
     {
         $params = $this->prepareParameters();

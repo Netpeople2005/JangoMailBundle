@@ -5,6 +5,7 @@ namespace Netpeople\JangoMailBundle\Emails;
 use Netpeople\JangoMailBundle\Emails\EmailInterface;
 use Symfony\Component\Validator\Constraints\Type;
 use Netpeople\JangoMailBundle\Groups\Group;
+use Netpeople\JangoMailBundle\Recipients\RecipientInterface;
 
 /**
  * Description of Email
@@ -13,6 +14,12 @@ use Netpeople\JangoMailBundle\Groups\Group;
  */
 class Email implements EmailInterface
 {
+
+    /**
+     *
+     * @var string 
+     */
+    protected $emailID;
 
     /**
      *
@@ -27,14 +34,14 @@ class Email implements EmailInterface
     protected $message;
 
     /**
-     * @Type(type="Netpeople\JangoMailBundle\Groups\Group")
+     * 
      * @var type 
      */
-    protected $group;
+    protected $groups;
 
     /**
      *
-     * @var type 
+     * @var array 
      */
     protected $recipients;
 
@@ -46,6 +53,16 @@ class Email implements EmailInterface
         'OpenTrack' => 'True',
         'ClickTrack' => 'True',
     );
+
+    public function getEmailID()
+    {
+        return $this->emailID;
+    }
+
+    public function setEmailID($emailID)
+    {
+        $this->emailID = $emailID;
+    }
 
     public function getMessage()
     {
@@ -68,7 +85,16 @@ class Email implements EmailInterface
         return strip_tags($this->message);
     }
 
-    public function getOptions()
+    public function getOptions($name = NULL)
+    {
+        if ($name) {
+            return array_key_exists($name, $this->options) ?
+                    $this->options[$name] : NULL;
+        }
+        return $this->options;
+    }
+
+    public function getOptionsString(array $options)
     {
         $options = array();
         foreach ($this->options as $index => $value) {
@@ -77,7 +103,7 @@ class Email implements EmailInterface
         return join(',', $options);
     }
 
-    public function setOptions($options)
+    public function setOptions(array $options)
     {
         $this->options = $options;
         return $this;
@@ -98,18 +124,45 @@ class Email implements EmailInterface
      *
      * @return Group 
      */
-    public function getGroup()
+    public function getGroups()
     {
-        return $this->group;
+        return $this->groups;
     }
-    
+
+    /**
+     *
+     * @param array $groups
+     */
+    public function setGroups(array $groups)
+    {
+        $this->groups = $groups;
+        return $this;
+    }
+
     /**
      *
      * @param Group $group 
      */
-    public function setGroup(Group $group)
+    public function addGroup(Group $group)
     {
-        $this->group = $group;
+        $this->groups[$group->getName()] = $group;
+        return $this;
+    }
+
+    public function getRecipients()
+    {
+        return $this->recipients;
+    }
+
+    public function setRecipients($recipients)
+    {
+        $this->recipients = $recipients;
+        return $this;
+    }
+
+    public function addRecipient(RecipientInterface $recipients)
+    {
+        $this->recipients[$recipients->getEmail()] = $recipients;
         return $this;
     }
 
