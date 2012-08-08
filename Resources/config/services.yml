@@ -13,7 +13,7 @@ parameters:
 services:
     jango_mail:
         class: %jango_mail.class%
-        arguments: [%jango_mail.config%]
+        arguments: [%jango_mail.config% , %%]
         calls:
             - [ setCampaign, [ "@jango_mail.campaign_sending" ] ]
             - [ setTransactional, [ "@jango_mail.transactional_sending" ] ]

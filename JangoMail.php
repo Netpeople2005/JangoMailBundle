@@ -5,6 +5,7 @@ namespace Netpeople\JangoMailBundle;
 use Netpeople\JangoMailBundle\Groups\GroupAdmin;
 use Netpeople\JangoMailBundle\CampaignSending;
 use Netpeople\JangoMailBundle\TransactionalSending;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
  * Description of JangoMail
@@ -49,10 +50,16 @@ class JangoMail
      * @var string 
      */
     protected $error;
+    
+    /**
+     *
+     * @var RegistryInterface 
+     */
+    protected $registry;
 
-    public function __construct($config)
+    public function __construct($config, RegistryInterface $registry)
     {
-        $this->setConfig($config);
+        $this->setConfig($config)->registry = $registry;
     }
 
     /**
@@ -66,6 +73,14 @@ class JangoMail
             //var_dump($this->jangoClient,$this->config['url_jango']);die;
         }
         return $this->jangoClient;
+    }
+    /**
+     *
+     * @return RegistryInterface 
+     */
+    public function getEntityManager($class)
+    {
+        return $this->registry->getEntityManagerForClass($class);
     }
 
     /**
