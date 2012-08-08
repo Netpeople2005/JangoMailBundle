@@ -16,11 +16,14 @@ class DefaultController extends Controller
     {
         $email = new Email();
         
-        var_dump($this->get('jango_mail'));
         
 //        $email->addRecipient(new Recipient('manuel_j555@hotmail.com'))
-//                ->setMessage('el mensaje<h3>Ahora con entrega desabilitada :-)</h3>')
+//                ->setMessage('el mensaje<h3>Ahora con entrega desabilitada :-) 222222222222222</h3>')
 //                ->setSubject('el asunto');
+//        var_dump($this->get('jango_mail')->addEmailLog($email,'SUCCESS prueba'));
+//        var_dump($e = $this->getDoctrine()->getRepository('JangoMailBundle:EmailLogs')
+//                ->findOneBy(array()));
+//        var_dump($e->getEmail()->getRecipients());
 //        $email->addGroup(new Group('test'))
 //                ->setMessage('Enviando un mensaje a un grupo :-) con correos ocultos')
 //                ->setSubject('el asunto del mensaje al grupooooo son las 2:05 pm');

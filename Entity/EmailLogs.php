@@ -3,6 +3,7 @@
 namespace Netpeople\JangoMailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Netpeople\JangoMailBundle\Emails\Email;
 
 /**
  * Netpeople\JangoMailBundle\Entity\EmailLogs
@@ -12,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class EmailLogs
 {
+
     /**
      * @var integer $id
      *
@@ -22,7 +24,7 @@ class EmailLogs
     private $id;
 
     /**
-     * @var object $email
+     * @var Email
      *
      * @ORM\Column(name="email",  type="object")
      */
@@ -38,10 +40,16 @@ class EmailLogs
     /**
      * @var string $error
      *
-     * @ORM\Column(name="error", type="string", length=255)
+     * @ORM\Column(name="error", type="string", length=255, nullable=TRUE)
      */
     private $error;
 
+    /**
+     * @var string $error
+     *
+     * @ORM\Column(name="datetime", type="date", length=255)
+     */
+    private $datetime;
 
     /**
      * Get id
@@ -54,23 +62,29 @@ class EmailLogs
     }
 
     /**
-     * Set email
      *
-     * @param object $email
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-    }
-
-    /**
-     * Get email
-     *
-     * @return object 
+     * @return Email 
      */
     public function getEmail()
     {
         return $this->email;
+    }
+
+    public function setEmail(Email $email)
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    public function getDatetime()
+    {
+        return $this->datetime;
+    }
+
+    public function setDatetime($datetime)
+    {
+        $this->datetime = $datetime;
+        return $this;
     }
 
     /**
@@ -81,6 +95,7 @@ class EmailLogs
     public function setResult($result)
     {
         $this->result = $result;
+        return $this;
     }
 
     /**
@@ -101,6 +116,7 @@ class EmailLogs
     public function setError($error)
     {
         $this->error = $error;
+        return $this;
     }
 
     /**
@@ -112,4 +128,5 @@ class EmailLogs
     {
         return $this->error;
     }
+
 }

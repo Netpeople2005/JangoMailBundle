@@ -6,6 +6,7 @@ use Netpeople\JangoMailBundle\Groups\GroupAdmin;
 use Netpeople\JangoMailBundle\CampaignSending;
 use Netpeople\JangoMailBundle\TransactionalSending;
 use Symfony\Bundle\DoctrineBundle\Registry;
+use Netpeople\JangoMailBundle\Emails\EmailInterface;
 
 /**
  * Description of JangoMail
@@ -77,7 +78,7 @@ class JangoMail
 
     /**
      *
-     * @return RegistryInterface 
+     * @return \Doctrine\ORM\EntityManager 
      */
     public function getEntityManager($class)
     {
@@ -201,6 +202,20 @@ class JangoMail
     public function getError()
     {
         return $this->error;
+    }
+
+    public function addEmailLog(EmailInterface $email, $result)
+    {
+        if ($this->getConfig('enable_log') == TRUE) {
+            $log = new \Netpeople\JangoMailBundle\Entity\EmailLogs();
+            $log->setEmail($email)->setResult($result)
+                    ->setError($this->getError())
+                    ->setDatetime(new \DateTime(time()));
+            $eManager = $this->getEntityManager(get_class($log));
+            $eManager->persist($log);
+            $eManager->flush();
+        }
+        return $this;
     }
 
 }

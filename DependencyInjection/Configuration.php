@@ -31,6 +31,7 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('fromemail')->end()
                     ->scalarNode('fromname')->end()
                     ->scalarNode('disable_delivery')->defaultValue(false)->end()
+                    ->scalarNode('enable_log')->defaultValue(false)->end()
                     ->arrayNode('bcc')
                         ->prototype('scalar')->end()
                     ->end()
