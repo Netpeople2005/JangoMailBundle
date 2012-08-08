@@ -5,7 +5,7 @@ namespace Netpeople\JangoMailBundle;
 use Netpeople\JangoMailBundle\Groups\GroupAdmin;
 use Netpeople\JangoMailBundle\CampaignSending;
 use Netpeople\JangoMailBundle\TransactionalSending;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Symfony\Bundle\DoctrineBundle\Registry;
 
 /**
  * Description of JangoMail
@@ -50,14 +50,14 @@ class JangoMail
      * @var string 
      */
     protected $error;
-    
+
     /**
      *
-     * @var RegistryInterface 
+     * @var Registry 
      */
     protected $registry;
 
-    public function __construct($config, RegistryInterface $registry)
+    public function __construct($config, Registry $registry)
     {
         $this->setConfig($config)->registry = $registry;
     }
@@ -74,6 +74,7 @@ class JangoMail
         }
         return $this->jangoClient;
     }
+
     /**
      *
      * @return RegistryInterface 
@@ -176,8 +177,8 @@ class JangoMail
         if (count($email->getGroups())) {
             return $this->getCampaign()->setEmail($email)->send();
         } elseif (count($email->getRecipients())) {
-            return $this->getTransactional()->setEmail($email)->send();            
-        }else{
+            return $this->getTransactional()->setEmail($email)->send();
+        } else {
             //aqui debemos informar que pasó
         }
     }

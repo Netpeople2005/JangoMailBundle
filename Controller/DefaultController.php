@@ -16,7 +16,7 @@ class DefaultController extends Controller
     {
         $email = new Email();
         
-        var_dump($this->get('jango_mail')->getGroupAdmin()->getMembers(new Group('test')));
+        var_dump($this->get('jango_mail'));
         
 //        $email->addRecipient(new Recipient('manuel_j555@hotmail.com'))
 //                ->setMessage('el mensaje<h3>Ahora con entrega desabilitada :-)</h3>')
