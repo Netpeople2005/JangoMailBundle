@@ -24,7 +24,7 @@ class EmailLogs
     /**
      * @var object $email
      *
-     * @ORM\Column(name="email",  type="string", length=50)
+     * @ORM\Column(name="email",  type="object")
      */
     private $email;
 
