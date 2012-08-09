@@ -6,6 +6,7 @@ use Netpeople\JangoMailBundle\Emails\EmailInterface;
 use Symfony\Component\Validator\Constraints\Type;
 use Netpeople\JangoMailBundle\Groups\Group;
 use Netpeople\JangoMailBundle\Recipients\RecipientInterface;
+use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Description of Email
@@ -35,13 +36,13 @@ class Email implements EmailInterface
 
     /**
      * 
-     * @var type 
+     * @var ArrayCollection 
      */
     protected $groups;
 
     /**
      *
-     * @var array 
+     * @var ArrayCollection  
      */
     protected $recipients;
 
@@ -50,6 +51,12 @@ class Email implements EmailInterface
      * @var array 
      */
     protected $options = array();
+
+    function __construct()
+    {
+        $this->recipients = new ArrayCollection();
+        $this->groups = new ArrayCollection();
+    }
 
     public function getEmailID()
     {
@@ -119,7 +126,7 @@ class Email implements EmailInterface
 
     /**
      *
-     * @return Group 
+     * @return ArrayCollection 
      */
     public function getGroups()
     {
@@ -128,9 +135,9 @@ class Email implements EmailInterface
 
     /**
      *
-     * @param array $groups
+     * @param ArrayCollection $groups
      */
-    public function setGroups(array $groups)
+    public function setGroups(ArrayCollection $groups)
     {
         $this->groups = $groups;
         return $this;
@@ -142,10 +149,16 @@ class Email implements EmailInterface
      */
     public function addGroup(Group $group)
     {
-        $this->groups[$group->getName()] = $group;
+        if (!$this->groups->contains($group)) {
+            $this->groups->add($group);
+        }
         return $this;
     }
 
+    /**
+     *
+     * @return ArrayCollection  
+     */
     public function getRecipients()
     {
         return $this->recipients;
@@ -157,9 +170,11 @@ class Email implements EmailInterface
         return $this;
     }
 
-    public function addRecipient(RecipientInterface $recipients)
+    public function addRecipient(RecipientInterface $recipient)
     {
-        $this->recipients[$recipients->getEmail()] = $recipients;
+        if (!$this->recipients->contains($recipient)) {
+            $this->recipients->add($recipient);
+        }
         return $this;
     }
 

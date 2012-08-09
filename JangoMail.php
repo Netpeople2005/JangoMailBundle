@@ -210,7 +210,7 @@ class JangoMail
             $log = new \Netpeople\JangoMailBundle\Entity\EmailLogs();
             $log->setEmail($email)->setResult($result)
                     ->setError($this->getError())
-                    ->setDatetime(new \DateTime(time()));
+                    ->setDatetime(new \DateTime());
             $eManager = $this->getEntityManager(get_class($log));
             $eManager->persist($log);
             $eManager->flush();

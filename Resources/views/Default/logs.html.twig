@@ -11,6 +11,7 @@
         <tr>
             <th>ID</th>
             <th>Asunto del Mensaje</th>
+            <th>Fecha del Envio</th>
             <th>Resultado del Envio</th>
             <th>Error ( De Haber alguno )</th>
         </tr>
@@ -20,6 +21,7 @@
             <tr>
                 <td>{{ log.id }}</td>
                 <td>{{ log.email.subject }}</td>
+                <td>{{ log.datetime.format('d-m-Y H:i:s') }}</td>
                 <td>{{ log.result }}</td>
                 <td>{{ log.error }}</td>
                 <td><a class="detalle" href="{{ path('JangoMailBundle_logs_view',{ 'id': log.id }) }}">Detalle</a></td>
@@ -32,7 +34,6 @@
         {% endfor %}
     </tbody>
 </table>
-{% include "JangoMailBundle::modal.html.twig" %}
 {% endblock %}
 {% block javascripts %}
 {{ parent() }}
@@ -40,9 +41,7 @@
         $(function(){
             $("a.detalle").on('click',function(event){
                 event.preventDefault();
-                $("#mi_modal").load($(this).attr('href'),function(){
-                    $(this).modal('show');
-                })
+                $("#ajax").load($(this).attr('href'))
             })
         });
     </script>

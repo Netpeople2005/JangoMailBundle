@@ -1,0 +1,9 @@
+{% extends "JangoMailBundle::base.html.twig" %}
+{% block cuerpo %}
+    <h1>Probar envio de Correo a un grupo</h1>
+    {% include "JangoMailBundle::flashes.html.twig" %}
+    <form action="" method="post">
+        {{ form_widget(form) }}
+            <input type="submit" class="btn btn-primary" value="Enviar Correo" />
+    </form>
+{% endblock %}

@@ -1,0 +1,3 @@
+{% for tipo, mensaje in app.session.getFlashes() %}
+    <div class="alert alert-{{ tipo }}">{{ mensaje }}</div>
+{% endfor %}

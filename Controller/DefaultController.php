@@ -4,9 +4,10 @@ namespace Netpeople\JangoMailBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-//use \Netpeople\JangoMailBundle\Form\Type\EmailCampaignType;
-//use Netpeople\JangoMailBundle\Emails\Email;
-//use Netpeople\JangoMailBundle\Recipients\Recipient;
+use \Netpeople\JangoMailBundle\Form\Type\EmailType;
+use Netpeople\JangoMailBundle\Emails\Email;
+use Netpeople\JangoMailBundle\Recipients\Recipient;
+
 //use Netpeople\JangoMailBundle\Groups\Group;
 
 class DefaultController extends Controller
@@ -20,7 +21,7 @@ class DefaultController extends Controller
         $logs = $this->getDoctrine()
                 ->getRepository('JangoMailBundle:EmailLogs')
                 ->findAll();
-     
+
         return array(
             'logs' => $logs
         );
@@ -34,11 +35,9 @@ class DefaultController extends Controller
         $log = $this->getDoctrine()
                 ->getRepository('JangoMailBundle:EmailLogs')
                 ->findOneById($id);
-        
-        var_dump($log);die;
-     
+
         return array(
-            'logs' => $logs
+            'log' => $log
         );
     }
 
@@ -47,21 +46,25 @@ class DefaultController extends Controller
      */
     public function envioAction()
     {
-        $email = new \Netpeople\JangoMailBundle\Emails\Email();
-        
-        $r = new \Netpeople\JangoMailBundle\Recipients\Recipient();
-        
-        $r->setEmail('programador.manuel@gmail.com');
-        
-        $email->addRecipient($r)->setSubject('Asunto :-)')
-                ->setMessage("Este es el mensaje");
-        
-        var_dump($this->get('jango_mail')->send($email));
-        
-        return new \Symfony\Component\HttpFoundation\Response("jejeje");
-        
+        $email = new Email();
+
+        $email->addRecipient(new Recipient('@gmail.com'));
+
+        $form = $this->createForm(new EmailType(), $email);
+
+        if ($this->getRequest()->getMethod() === 'POST') {
+            if ($form->bindRequest($this->getRequest())->isValid()) {
+                $email = $form->getData();
+                if ($email = $this->get('jango_mail')->send($email)) {
+                    $this->get('session')->setFlash('success', "Se envió el Correo Perfectamente (ID: {$email->getEmailID()})");
+                } else {
+                    $this->get('session')->setFlash('error', $this->get('jango_mail')->getError());
+                }
+            }
+        }
+
         return array(
-            'logs' => $logs
+            'form' => $form->createView()
         );
     }
 

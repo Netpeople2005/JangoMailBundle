@@ -1,9 +1,7 @@
 {% extends "JangoMailBundle::base.html.twig" %}
 {% block cuerpo %}
 <h1>Lista de Grupos en Jango</h1>
-{% for tipo, mensaje in app.session.getFlashes() %}
-    <div class="alert alert-{{ tipo }}">{{ mensaje }}</div>
-{% endfor %}
+{% include "JangoMailBundle::flashes.html.twig" %}
     <p><a href="{{ path("JangoMailBundle_Grupos_crear") }}" class="btn btn-primary">Crear Grupo</a></p>
 <table class="table table-bordered table-striped">
     <tbody>
