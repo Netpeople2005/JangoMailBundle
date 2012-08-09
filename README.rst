@@ -44,7 +44,7 @@ Agregar la configuración para JANGO en el config.yml
 
     #app/config/config.yml 
     jango_mail:
-        userame: Nombre de usuario de Jango
+        username: Nombre de usuario de Jango
         password: Contraseña del Usuario en Jango
         fromname: Nombre del Remitente para los Correos
         fromemail: Correo del Remitente
