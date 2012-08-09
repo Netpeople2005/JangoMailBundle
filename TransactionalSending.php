@@ -64,6 +64,7 @@ class TransactionalSending
 
     public function send()
     {
+        $result = FALSE;
         if (!($this->getEmail() instanceof EmailInterface)) {
             throw new \Exception('Debe llamar a setEmail() antes de hacer el Envío');
         }
@@ -79,7 +80,7 @@ class TransactionalSending
             } else {
                 //si no hay a quien enviar, no lo enviamos.
                 $this->email->setEmailID('- TEST -');
-                return $this->email;
+                $result = $this->email;
             }
         }
         if (!count($this->getEmail()->getRecipients())) {
@@ -94,16 +95,15 @@ class TransactionalSending
 
             if (0 == $response[0]) {
                 $this->email->setEmailID($response[2]);
-                $this->jangoMail->addEmailLog($this->email,'SUCCESS');
-                return $this->email;
+                $result = $this->email;
             } else {
                 $this->jangoMail->setError("No se pudo enviar el Correo (Asunto: {$this->email->getSubject()})");
-                $this->jangoMail->addEmailLog($this->email,'ERROR');
             }
         } catch (\Exception $e) {
             $this->jangoMail->setError($e->getMessage());
         }
-        return FALSE;
+        $this->jangoMail->addEmailLog($this->email, $result ? 'SUCCESS' : 'ERROR');
+        return $result;
     }
 
 }
