@@ -41,7 +41,7 @@ Registrar el Bundle en el AppKernel
 Agregar la configuración para JANGO en el config.yml
 
 ::
-
+    #app/config/congif.yml
     jango_mail:
         userame: Nombre de usuario de Jango
         password: Contraseña del Usuario en Jango
@@ -55,4 +55,15 @@ Agregar la configuración para JANGO en el config.yml
 Adicional
 ---------
 
-Ademas de ofrecer un API de comunicacion con jango, este bundle ofrece un entorno visual para la gestion de 
+Ademas de ofrecer un API de comunicación con jango, este bundle ofrece un entorno visual para la gestion y pruebas de la API.
+
+Para lograr esto solo debemos incluir en el archivo routing_dev.yml ( preferiblemente routin_dev para que no esté disponible en produccion ) de la app lo siguiente:
+
+::
+
+    #app/config/routing_dev.yml
+    _jango_mail:
+        resource: "@JangoMailBundle/Resources/config/routing.yml"
+        prefix:   /jango
+
+Con la carga de este recurso se tienen displonibles las pruebas y visualizaciones del API.
