@@ -47,6 +47,10 @@ Agregar la configuración para JANGO en el config.yml
         password: Contraseña del Usuario en Jango
         fromname: Nombre del Remitente para los Correos
         fromemail: Correo del Remitente
+        #enable_log: true ó false # es opcional, por defecto está en false
+        #disable_delivery: true ó false #es opcional, por defecto esta en false
+        #bcc: #coleccion de correos a los que siempre les llegará el email, es opcional
+            # - correo@dominio.com # este seria un ejemplo de correo, por ahora solo trabaja con 1 :-/
 
 Adicional
 ---------
