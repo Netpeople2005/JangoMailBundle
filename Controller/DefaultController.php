@@ -16,6 +16,14 @@ class DefaultController extends Controller
     /**
      * @Template()
      */
+    public function indexAction()
+    {
+         return array();
+    }
+
+    /**
+     * @Template()
+     */
     public function logsAction()
     {
         $logs = $this->getDoctrine()

@@ -2,11 +2,15 @@ JangoMailBundle_logs:
     pattern:  /logs
     defaults: { _controller: JangoMailBundle:Default:logs }
     
+JangoMailBundle_home:
+    pattern:  /
+    defaults: { _controller: JangoMailBundle:Default:index }
+    
 JangoMailBundle_logs_view:
     pattern:  /logs/{id}
     defaults: { _controller: JangoMailBundle:Default:log }
     
-JangoMailBundle_logs_envio:
+JangoMailBundle_envio:
     pattern:  /probar
     defaults: { _controller: JangoMailBundle:Default:envio }
 

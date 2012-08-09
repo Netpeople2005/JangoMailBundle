@@ -1,0 +1,9 @@
+{% extends "JangoMailBundle::base.html.twig" %}
+{% block cuerpo %}
+    <h1>Bienvenido al Entorno de Pruebas y Gestion de JangoMail</h1>
+    <ul>
+        <li><a href="{{ path("JangoMailBundle_envio") }}">Enviar Correo de Prueba</a></li>
+        <li><a href="{{ path("JangoMailBundle_logs") }}">Ver los Registros de Correos Enviados</a></li>
+        <li><a href="{{ path("JangoMailBundle_Grupos_index") }}">Ver los Grupos de Jango</a></li>
+    </ul>
+{% endblock %}
