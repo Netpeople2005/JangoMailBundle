@@ -1,15 +1,15 @@
-JangoMailBundle_homepage:
-    pattern:  /hello/{name}
-    defaults: { _controller: JangoMailBundle:Default:index }
+JangoMailBundle_logs:
+    pattern:  /logs
+    defaults: { _controller: JangoMailBundle:Default:logs }
     
-JangoMailBundle_sendMass:
-    pattern:  /send
-    defaults: { _controller: JangoMailBundle:Default:send }
+JangoMailBundle_logs_view:
+    pattern:  /logs/{id}
+    defaults: { _controller: JangoMailBundle:Default:logs }
     
-JangoMailBundle_agregarMiembros:
-    pattern:  /add_members
-    defaults: { _controller: JangoMailBundle:Default:agregarMiembros }
+JangoMailBundle_logs_envio:
+    pattern:  /probar
+    defaults: { _controller: JangoMailBundle:Default:envio }
 
-JangoMailBundle_Grupos:
+JangoMailBundle_Grupos_index:
     resource: "@JangoMailBundle/Resources/config/rutas/grupos.yml"
     prefix:  /grupos

@@ -27,6 +27,8 @@
             <article class="container">{% block cuerpo %}{% endblock %}</article>
             <footer></footer>
         {% endblock %}
-        {% block javascripts %}{% endblock %}
+        {% block javascripts %}
+            <script type="text/javascript" src="{{ asset('bundles/jangomail/js/jquery-1.7.2.min.js') }}"></script>
+        {% endblock %}
     </body>
 </html>

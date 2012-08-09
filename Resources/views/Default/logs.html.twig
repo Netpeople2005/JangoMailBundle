@@ -1,0 +1,48 @@
+{% extends "JangoMailBundle::base.html.twig" %}
+{% block cuerpo %}
+<div class="page-header">
+    <h1>Registros de Correos Emviados</h1>
+</div>
+{% for tipo, mensaje in app.session.getFlashes() %}
+    <div class="alert alert-{{ tipo }}">{{ mensaje }}</div>
+{% endfor %}
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Asunto del Mensaje</th>
+            <th>Resultado del Envio</th>
+            <th>Error ( De Haber alguno )</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+            <tr>
+                <td>{{ log.id }}</td>
+                <td>{{ log.email.subject }}</td>
+                <td>{{ log.result }}</td>
+                <td>{{ log.error }}</td>
+                <td><a class="detalle" href="{{ path('JangoMailBundle_logs_view',{ 'id': log.id }) }}">Detalle</a></td>
+                <!--<td><a href="{ { path('JangoMailBundle_Grupos_editar',{ 'grupoID': grupo.groupID }) }}">Editar</a></td>-->
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="100">No hay Registros</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% include "JangoMailBundle::modal.html.twig" %}
+{% endblock %}
+{% block javascripts %}
+{{ parent() }}
+    <script type="text/javascript">
+        $(function(){
+            $("a.detalle").on('click',function(){
+                $("<div />").load($(this).attr('href'),function(){
+                    $(this)
+                })
+            })
+        });
+    </script>
+{% endblock %}

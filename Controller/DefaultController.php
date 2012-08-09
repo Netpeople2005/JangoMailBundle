@@ -4,84 +4,65 @@ namespace Netpeople\JangoMailBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use \Netpeople\JangoMailBundle\Form\Type\EmailCampaignType;
-use Netpeople\JangoMailBundle\Emails\Email;
-use Netpeople\JangoMailBundle\Recipients\Recipient;
-use Netpeople\JangoMailBundle\Groups\Group;
+//use \Netpeople\JangoMailBundle\Form\Type\EmailCampaignType;
+//use Netpeople\JangoMailBundle\Emails\Email;
+//use Netpeople\JangoMailBundle\Recipients\Recipient;
+//use Netpeople\JangoMailBundle\Groups\Group;
 
 class DefaultController extends Controller
 {
 
-    public function indexAction($name)
+    /**
+     * @Template()
+     */
+    public function logsAction()
     {
-        $email = new Email();
-        
-        
-//        $email->addRecipient(new Recipient('manuel_j555@hotmail.com'))
-//                ->setMessage('el mensaje<h3>Ahora con entrega desabilitada :-) 222222222222222</h3>')
-//                ->setSubject('el asunto');
-//        var_dump($this->get('jango_mail')->addEmailLog($email,'SUCCESS prueba'));
-//        var_dump($e = $this->getDoctrine()->getRepository('JangoMailBundle:EmailLogs')
-//                ->findOneBy(array()));
-//        var_dump($e->getEmail()->getRecipients());
-//        $email->addGroup(new Group('test'))
-//                ->setMessage('Enviando un mensaje a un grupo :-) con correos ocultos')
-//                ->setSubject('el asunto del mensaje al grupooooo son las 2:05 pm');
-//                
-//        var_dump($this->get('jango_mail')->send($email));
-//        var_dump($this->get('jango_mail')->getError());
-        
-        
-        return $this->render('JangoMailBundle:Default:index.html.twig', array('name' => $name));
+        $logs = $this->getDoctrine()
+                ->getRepository('JangoMailBundle:EmailLogs')
+                ->findAll();
+     
+        return array(
+            'logs' => $logs
+        );
     }
 
     /**
-     * @Template() 
+     * @Template()
      */
-    public function sendAction()
+    public function logAction($id)
     {
-        $form = $this->createForm(new EmailCampaignType($this->get('jango_mail')->getGroupAdmin()), new Email());
-
-        if ($this->getRequest()->getMethod() == 'POST') {
-            if ($form->bindRequest($this->getRequest())->isValid()) {
-                var_dump($form->getData());
-                //var_dump($this->get('jango_mail')->send($form->getData()));
-            }
-        }
-
-        return array('form' => $form->createView());
+        $log = $this->getDoctrine()
+                ->getRepository('JangoMailBundle:EmailLogs')
+                ->findOneById($id);
+        
+        var_dump($log);die;
+     
+        return array(
+            'logs' => $logs
+        );
     }
 
     /**
-     * @Template() 
+     * @Template()
      */
-    public function crearGrupoAction()
+    public function envioAction()
     {
+        $email = new \Netpeople\JangoMailBundle\Emails\Email();
         
+        $r = new \Netpeople\JangoMailBundle\Recipients\Recipient();
         
-        return array();
-    }
-
-    /**
-     * @Template() 
-     */
-    public function agregarMiembrosAction()
-    {
-        /* @var $adminGrupos \Netpeople\JangoMailBundle\Groups\GroupAdmin  */
-        $adminGrupos = $this->get('jango_mail')->getGroupAdmin();
+        $r->setEmail('programador.manuel@gmail.com');
         
-        $grupo = new Group('test');
+        $email->addRecipient($r)->setSubject('Asunto :-)')
+                ->setMessage("Este es el mensaje");
         
-        $grupo->addRecipient(new Recipient('programador.manuel@gmail.com'));
-        $grupo->addRecipient(new Recipient('apatino@odeveloper.com'));
-        $grupo->addRecipient(new Recipient('ohernandez@odeveloper.com'));
-        $grupo->addRecipient(new Recipient('jcardozo@odeveloper.com'));
+        var_dump($this->get('jango_mail')->send($email));
         
-        var_dump($adminGrupos->addMembers($grupo));
-        var_dump($this->get('jango_mail')->getError());
+        return new \Symfony\Component\HttpFoundation\Response("jejeje");
         
-        die;
-        return array();
+        return array(
+            'logs' => $logs
+        );
     }
 
 }
