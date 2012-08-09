@@ -41,7 +41,7 @@ Registrar el Bundle en el AppKernel
 Agregar la configuración para JANGO en el config.yml
 
 ::
-    #app/config/congif.yml
+    #app/config/congif.yml 
     jango_mail:
         userame: Nombre de usuario de Jango
         password: Contraseña del Usuario en Jango
