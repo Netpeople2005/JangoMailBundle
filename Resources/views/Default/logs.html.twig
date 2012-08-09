@@ -38,9 +38,10 @@
 {{ parent() }}
     <script type="text/javascript">
         $(function(){
-            $("a.detalle").on('click',function(){
-                $("<div />").load($(this).attr('href'),function(){
-                    $(this)
+            $("a.detalle").on('click',function(event){
+                event.preventDefault();
+                $("#mi_modal").load($(this).attr('href'),function(){
+                    $(this).modal('show');
                 })
             })
         });

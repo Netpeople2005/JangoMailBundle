@@ -4,7 +4,7 @@ JangoMailBundle_logs:
     
 JangoMailBundle_logs_view:
     pattern:  /logs/{id}
-    defaults: { _controller: JangoMailBundle:Default:logs }
+    defaults: { _controller: JangoMailBundle:Default:log }
     
 JangoMailBundle_logs_envio:
     pattern:  /probar
