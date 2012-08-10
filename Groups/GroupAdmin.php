@@ -113,26 +113,27 @@ class GroupAdmin implements ChoiceListInterface
         /* @var $groupJango Group */
         if ($groupJango = $this->getMembers(new Group($group->getName()))) {
             foreach ($group->getRecipients() as $e) {
-                if ($groupJango->getRecipients()->contains($e)) {
-                    continue; //si ya existe el correo en jango no lo volvemos a enviar
-                }
-                $params['EmailAddress'] = $e->getEmail();
-                $params['FieldValues'] = array($e->getName());
-                try {
-                    $response = $this->jangoMail->getJangoInstance()
-                            ->AddGroupMember($params);
-                    $response = preg_split('/\n/m', $response->AddGroupMemberResult);
-                    var_dump($response);
-                    if (!0 == $response[0]) {
-                        $result = FALSE;
+                if (!$groupJango->getRecipients()->contains($e)) {
+                    $params['EmailAddress'] = $e->getEmail();
+                    $params['FieldValues'] = array($e->getName());
+                    try {
+                        $response = $this->jangoMail->getJangoInstance()
+                                ->AddGroupMember($params);
+                        $response = preg_split('/\n/m', $response->AddGroupMemberResult);
+                        if (!0 == $response[0]) {
+                            $result = FALSE;
+                        }
+                    } catch (\Exception $e) {
+                        $this->jangoMail->setError($e->getMessage());
+                        return FALSE;
                     }
-                } catch (\Exception $e) {
-                    $this->jangoMail->setError($e->getMessage());
-                    return FALSE;
                 }
             }
+            foreach($groupJango->getRecipients() as $e){
+                $group->addRecipient($e);// insertamos los miembros que estan en jango al objeto.
+            }
             if ($result) {
-                return TRUE;
+                return $group;
             } else {
                 $this->jangoMail->setError("No se Pudieron Guardar todos los Destinatarios");
                 return FALSE;
