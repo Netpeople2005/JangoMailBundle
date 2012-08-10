@@ -80,7 +80,7 @@ class Group
      * @param RecipientsCollection $recipients
      * @return \Netpeople\JangoMailBundle\Groups\Group 
      */
-    public function setRecipients(ArrayCollection $recipients)
+    public function setRecipients(RecipientsCollection $recipients)
     {
         $this->recipients = $recipients;
         return $this;
