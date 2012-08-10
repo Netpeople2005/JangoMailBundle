@@ -108,30 +108,38 @@ class GroupAdmin implements ChoiceListInterface
             'FieldNames' => array('Name'),
                 ));
 
-        $results = array();
-                
-        foreach ($group->getRecipients() as $e) {
-            $params['EmailAddress'] = $e->getEmail();
-            $params['FieldValues'] = array($e->getName());
-            try {
-                $response = $this->jangoMail->getJangoInstance()
-                        ->AddGroupMember($params);
-                $response = preg_split('/\n/m', $response->AddGroupMemberResult);
-                var_dump($response);
-                if (0 == $response[0]) {
-                    $results[$response[2]] = $e;
-                } else {
-                    break;
+        $result = TRUE;
+
+        /* @var $groupJango Group */
+        if ($groupJango = $this->getMembers(new Group($group->getName()))) {
+            foreach ($group->getRecipients() as $e) {
+                if (!$groupJango->getRecipients()->contains($e)) {
+                    $params['EmailAddress'] = $e->getEmail();
+                    $params['FieldValues'] = array($e->getName());
+                    try {
+                        $response = $this->jangoMail->getJangoInstance()
+                                ->AddGroupMember($params);
+                        $response = preg_split('/\n/m', $response->AddGroupMemberResult);
+                        if (!0 == $response[0]) {
+                            $result = FALSE;
+                        }
+                    } catch (\Exception $e) {
+                        $this->jangoMail->setError($e->getMessage());
+                        return FALSE;
+                    }
                 }
-            } catch (\Exception $e) {
-                $this->jangoMail->setError($e->getMessage());
+            }
+            foreach($groupJango->getRecipients() as $e){
+                $group->addRecipient($e);// insertamos los miembros que estan en jango al objeto.
+            }
+            if ($result) {
+                return $group;
+            } else {
+                $this->jangoMail->setError("No se Pudieron Guardar todos los Destinatarios");
                 return FALSE;
             }
-        }
-        if (count($results) === count($group->getRecipients())) {
-            return $results;
         } else {
-            $this->jangoMail->setError("No se Pudieron Guardar todos los Destinatarios");
+            $this->jangoMail->setError("No se pudo obtener la Información del Grupo en Jango");
             return FALSE;
         }
     }
@@ -186,7 +194,7 @@ class GroupAdmin implements ChoiceListInterface
         }
         return FALSE;
     }
-    
+
     /**
      *
      * @return boolean 
@@ -195,7 +203,7 @@ class GroupAdmin implements ChoiceListInterface
     {
         $params = $this->prepareParameters(array(
             'GroupName' => $group->getName()
-        ));
+                ));
 
         try {
             $response = $this->jangoMail->getJangoInstance()

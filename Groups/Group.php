@@ -3,7 +3,7 @@
 namespace Netpeople\JangoMailBundle\Groups;
 
 use Netpeople\JangoMailBundle\Recipients\RecipientInterface;
-use \Doctrine\Common\Collections\ArrayCollection;
+use Netpeople\JangoMailBundle\Recipients\RecipientsCollection;
 
 /**
  * Description of Group
@@ -25,7 +25,7 @@ class Group
     function __construct($name = NULL)
     {
         $this->name = $name;
-        $this->recipients = new ArrayCollection();
+        $this->recipients = new RecipientsCollection();
     }
 
     public function getName()
@@ -77,10 +77,10 @@ class Group
 
     /**
      *
-     * @param ArrayCollection $recipients
+     * @param RecipientsCollection $recipients
      * @return \Netpeople\JangoMailBundle\Groups\Group 
      */
-    public function setRecipients(ArrayCollection $recipients)
+    public function setRecipients(RecipientsCollection $recipients)
     {
         $this->recipients = $recipients;
         return $this;
@@ -88,7 +88,7 @@ class Group
 
     /**
      *
-     * @return ArrayCollection 
+     * @return RecipientsCollection 
      */
     public function getRecipients()
     {
