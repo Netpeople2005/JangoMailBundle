@@ -15,7 +15,7 @@ class RecipientsCollection extends ArrayCollection
     public function contains($recipient)
     {
         if (!$recipient->getEmail()) {
-            foreach ($this->_elements as $element) {
+            foreach ($this->toArray() as $element) {
                 if ($recipient->getEmail() === $element->getEmail()) {
                     return TRUE;
                 }
