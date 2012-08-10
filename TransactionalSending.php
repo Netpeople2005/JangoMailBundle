@@ -12,8 +12,7 @@ use Netpeople\JangoMailBundle\Recipients\Recipient;
  *
  * @author manuel
  */
-class TransactionalSending
-{
+class TransactionalSending {
 
     /**
      *
@@ -27,24 +26,20 @@ class TransactionalSending
      */
     protected $email = NULL;
 
-    public function __construct(JangoMail $jangoMail)
-    {
+    public function __construct(JangoMail $jangoMail) {
         $this->jangoMail = $jangoMail;
     }
 
-    public function setEmail(EmailInterface $email)
-    {
+    public function setEmail(EmailInterface $email) {
         $this->email = $email;
         return $this;
     }
 
-    public function getEmail()
-    {
+    public function getEmail() {
         return $this->email;
     }
 
-    public function getParametersToSend(Recipient $recipient)
-    {
+    public function getParametersToSend(Recipient $recipient) {
         $config = $this->jangoMail->getConfig();
 
         return array(
@@ -62,8 +57,7 @@ class TransactionalSending
         );
     }
 
-    public function send()
-    {
+    public function send() {
         $result = FALSE;
         if (!($this->getEmail() instanceof EmailInterface)) {
             throw new \Exception('Debe llamar a setEmail() antes de hacer el Envío');
@@ -82,25 +76,26 @@ class TransactionalSending
                 $this->email->setEmailID('- TEST -');
                 $result = $this->email;
             }
-        }
-        if (!count($this->getEmail()->getRecipients())) {
-            throw new \Exception('Debe especificar al menos un Recipient antes de hacer el Envío');
-        }
-        try {
-            foreach ($this->getEmail()->getRecipients() as $recipient) {
-                $response = $this->jangoMail->getJangoInstance()
-                        ->SendTransactionalEmail($this->getParametersToSend($recipient));
+        } else {
+            if (!count($this->getEmail()->getRecipients())) {
+                throw new \Exception('Debe especificar al menos un Recipient antes de hacer el Envío');
             }
-            $response = preg_split('/\n/m', $response->SendTransactionalEmailResult);
+            try {
+                foreach ($this->getEmail()->getRecipients() as $recipient) {
+                    $response = $this->jangoMail->getJangoInstance()
+                            ->SendTransactionalEmail($this->getParametersToSend($recipient));
+                }
+                $response = preg_split('/\n/m', $response->SendTransactionalEmailResult);
 
-            if (0 == $response[0]) {
-                $this->email->setEmailID($response[2]);
-                $result = $this->email;
-            } else {
-                $this->jangoMail->setError("No se pudo enviar el Correo (Asunto: {$this->email->getSubject()})");
+                if (0 == $response[0]) {
+                    $this->email->setEmailID($response[2]);
+                    $result = $this->email;
+                } else {
+                    $this->jangoMail->setError("No se pudo enviar el Correo (Asunto: {$this->email->getSubject()})");
+                }
+            } catch (\Exception $e) {
+                $this->jangoMail->setError($e->getMessage());
             }
-        } catch (\Exception $e) {
-            $this->jangoMail->setError($e->getMessage());
         }
         $this->jangoMail->addEmailLog($this->email, $result ? 'SUCCESS' : 'ERROR');
         return $result;
