@@ -111,7 +111,8 @@ class GroupAdmin implements ChoiceListInterface
         $result = TRUE;
 
         /* @var $groupJango Group */
-        if ($groupJango = $this->getMembers(new Group($group->getName())) !== FALSE) {
+        $groupJango = $this->getMembers(new Group($group->getName()));
+        if ($groupJango !== FALSE) {
             foreach ($group->getRecipients() as $e) {
                 if (!$groupJango->getRecipients()->contains($e)) {
                     $params['EmailAddress'] = $e->getEmail();
@@ -204,17 +205,15 @@ class GroupAdmin implements ChoiceListInterface
         $params = $this->prepareParameters(array(
             'GroupName' => $group->getName()
                 ));
-
         try {
             $response = $this->jangoMail->getJangoInstance()
                     ->Groups_GetMembers_XML($params);
             $xml = $response->Groups_GetMembers_XMLResult->any;
-            $recipients = array();
             foreach (simplexml_load_string($xml)->GroupMembers as $e) {
                 $recipient = new Recipient((string) $e->emailaddress);
-                $recipients[] = $recipient->setGroup($group);
+                $group->addRecipient($recipient);
             }
-            return $recipients;
+            return $group;
         } catch (SoapFault $e) {
             $this->jangoMail->setError($e->getMessage());
         } catch (\Exception $e) {
