@@ -111,7 +111,7 @@ class GroupAdmin implements ChoiceListInterface
         $result = TRUE;
 
         /* @var $groupJango Group */
-        if ($groupJango = $this->getMembers(new Group($group->getName()))) {
+        if ($groupJango = $this->getMembers(new Group($group->getName())) !== FALSE) {
             foreach ($group->getRecipients() as $e) {
                 if (!$groupJango->getRecipients()->contains($e)) {
                     $params['EmailAddress'] = $e->getEmail();
