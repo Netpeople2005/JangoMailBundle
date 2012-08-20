@@ -177,7 +177,8 @@ class JangoMail
          */
         if (count($email->getGroups())) {
             return $this->getCampaign()->setEmail($email)->send();
-        } elseif (count($email->getRecipients())) {
+        }
+        if (count($email->getRecipients())) {
             return $this->getTransactional()->setEmail($email)->send();
         } else {
             //aqui debemos informar que pasó
