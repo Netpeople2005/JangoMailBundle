@@ -12,7 +12,8 @@ use Netpeople\JangoMailBundle\Recipients\Recipient;
  *
  * @author manuel
  */
-class TransactionalSending {
+class TransactionalSending
+{
 
     /**
      *
@@ -26,20 +27,24 @@ class TransactionalSending {
      */
     protected $email = NULL;
 
-    public function __construct(JangoMail $jangoMail) {
+    public function __construct(JangoMail $jangoMail)
+    {
         $this->jangoMail = $jangoMail;
     }
 
-    public function setEmail(EmailInterface $email) {
+    public function setEmail(EmailInterface $email)
+    {
         $this->email = $email;
         return $this;
     }
 
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->email;
     }
 
-    public function getParametersToSend(Recipient $recipient) {
+    public function getParametersToSend(Recipient $recipient)
+    {
         $config = $this->jangoMail->getConfig();
 
         return array(
@@ -49,17 +54,18 @@ class TransactionalSending {
             'FromName' => $config['fromname'],
             'ToEmailAddress' => $recipient->getEmail(),
             'Subject' => $this->email->getSubject(),
-            'MessagePlain' => $this->email->getMessagePlain(),
-            'MessageHTML' => $this->email->getMessageHtml(),
-            'Options' => $this->email->getOptionsString(array(
+            'MessagePlain' => strip_tags($this->email->getMessage()),
+            'MessageHTML' => $this->email->getMessage(),
+            'Options' => $this->jangoMail->getOptionsString(array(
                 'BCC' => join(';', $config['bcc'])
             )),
         );
     }
 
-    public function send() {
+    public function send()
+    {
         $result = FALSE;
-        if (!($this->getEmail() instanceof EmailInterface)) {
+        if (!($this->email instanceof EmailInterface)) {
             throw new \Exception('Debe llamar a setEmail() antes de hacer el Envío');
         }
         //si está desabilitado el envio, quitamos los destinatarios
@@ -68,20 +74,20 @@ class TransactionalSending {
             //si hay correos de prueba definidos en el config.yml
             //colocamos a uno de ellos como destinatario.
             if (count($this->jangoMail->getConfig('bcc'))) {
-                $this->getEmail()->setRecipients(array(
-                    new Recipient(current($this->jangoMail->getConfig('bcc')))
-                ));
+                $this->email->getRecipients()->clear();
+                $recipient = new Recipient(current($this->jangoMail->getConfig('bcc')));
+                $this->email->getRecipients()->add($recipient);
             } else {
                 //si no hay a quien enviar, no lo enviamos.
                 $this->email->setEmailID('- TEST -');
                 $result = $this->email;
             }
         } else {
-            if (!count($this->getEmail()->getRecipients())) {
+            if (!count($this->email->getRecipients())) {
                 throw new \Exception('Debe especificar al menos un Recipient antes de hacer el Envío');
             }
             try {
-                foreach ($this->getEmail()->getRecipients() as $recipient) {
+                foreach ($this->email->getRecipients() as $recipient) {
                     $response = $this->jangoMail->getJangoInstance()
                             ->SendTransactionalEmail($this->getParametersToSend($recipient));
                 }

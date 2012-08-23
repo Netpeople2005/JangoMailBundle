@@ -218,5 +218,14 @@ class JangoMail
         }
         return $this;
     }
+    
+    public function getOptionsString(array $options = array())
+    {
+        $opts = array();
+        foreach ($options as $index => $value) {
+            $opts[] = "$index=$value";
+        }
+        return join(',', $opts);
+    }
 
 }
