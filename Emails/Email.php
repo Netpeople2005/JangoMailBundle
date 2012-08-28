@@ -7,6 +7,7 @@ use Symfony\Component\Validator\Constraints\Type;
 use Netpeople\JangoMailBundle\Groups\Group;
 use Netpeople\JangoMailBundle\Recipients\RecipientInterface;
 use \Doctrine\Common\Collections\ArrayCollection;
+use \Netpeople\JangoMailBundle\Recipients\RecipientsCollection;
 
 /**
  * Description of Email
@@ -54,7 +55,7 @@ class Email implements EmailInterface
 
     function __construct()
     {
-        $this->recipients = new ArrayCollection();
+        $this->recipients = new RecipientsCollection();
         $this->groups = new ArrayCollection();
     }
 
@@ -73,20 +74,10 @@ class Email implements EmailInterface
         return $this->message;
     }
 
-    public function getMessageHtml()
-    {
-        return $this->message;
-    }
-
     public function setMessage($message)
     {
         $this->message = $message;
         return $this;
-    }
-
-    public function getMessagePlain()
-    {
-        return strip_tags($this->message);
     }
 
     public function getOptions($name = NULL)

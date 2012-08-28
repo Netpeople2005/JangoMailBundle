@@ -177,7 +177,8 @@ class JangoMail
          */
         if (count($email->getGroups())) {
             return $this->getCampaign()->setEmail($email)->send();
-        } elseif (count($email->getRecipients())) {
+        }
+        if (count($email->getRecipients())) {
             return $this->getTransactional()->setEmail($email)->send();
         } else {
             //aqui debemos informar que pasó
@@ -216,6 +217,15 @@ class JangoMail
             $eManager->flush();
         }
         return $this;
+    }
+    
+    public function getOptionsString(array $options = array())
+    {
+        $opts = array();
+        foreach ($options as $index => $value) {
+            $opts[] = "$index=$value";
+        }
+        return join(',', $opts);
     }
 
 }

@@ -57,9 +57,9 @@ class CampaignSending
             'ToOther' => '', //por ahora nada
             'ToWebDatabase' => '', //por ahora nada
             'Subject' => $this->email->getSubject(),
-            'MessagePlain' => $this->email->getMessagePlain(),
-            'MessageHTML' => $this->email->getMessageHtml(),
-            'Options' => $this->email->getOptionsString(array(
+            'MessagePlain' => strip_tags($this->email->getMessage()),
+            'MessageHTML' => $this->email->getMessage(),
+            'Options' => $this->jangoMail->getOptionsString(array(
                 'BCC' => join(';', $config['bcc'])
             )),
         );
@@ -68,10 +68,10 @@ class CampaignSending
     public function send()
     {
         $result = FALSE;
-        if (!($this->getEmail() instanceof EmailInterface)) {
+        if (!($this->email instanceof EmailInterface)) {
             throw new \Exception('Debe llamar a setEmail() antes de hacer el Envío');
         }
-        if (!count($this->getEmail()->getGroups())) {
+        if (!count($this->email->getGroups())) {
             throw new \Exception('Debe agregar al menos un grupo antes de hacer el Envío');
         }
         try {
@@ -79,7 +79,7 @@ class CampaignSending
             //a un correo test
             if (TRUE === $this->jangoMail->getConfig('disable_delivery')) {
                 return $this->jangoMail->getTransactional()
-                                ->setEmail($this->getEmail())->send();
+                                ->setEmail($this->email)->send();
             }
             $response = $this->jangoMail->getJangoInstance()
                     ->SendMassEmail($this->getParametersToSend());

@@ -111,26 +111,26 @@ class GroupAdmin implements ChoiceListInterface
         $result = TRUE;
 
         /* @var $groupJango Group */
-        if ($groupJango = $this->getMembers(new Group($group->getName()))) {
+        $groupJango = $this->getMembers(new Group($group->getName()));
+        if ($groupJango !== FALSE) {
+            $group->getRecipients()->removeIfExistInCollection($group->getRecipients());
             foreach ($group->getRecipients() as $e) {
-                if (!$groupJango->getRecipients()->contains($e)) {
-                    $params['EmailAddress'] = $e->getEmail();
-                    $params['FieldValues'] = array($e->getName());
-                    try {
-                        $response = $this->jangoMail->getJangoInstance()
-                                ->AddGroupMember($params);
-                        $response = preg_split('/\n/m', $response->AddGroupMemberResult);
-                        if (!0 == $response[0]) {
-                            $result = FALSE;
-                        }
-                    } catch (\Exception $e) {
-                        $this->jangoMail->setError($e->getMessage());
-                        return FALSE;
+                $params['EmailAddress'] = $e->getEmail();
+                $params['FieldValues'] = array($e->getName());
+                try {
+                    $response = $this->jangoMail->getJangoInstance()
+                            ->AddGroupMember($params);
+                    $response = preg_split('/\n/m', $response->AddGroupMemberResult);
+                    if (!0 == $response[0]) {
+                        $result = FALSE;
                     }
+                } catch (\Exception $e) {
+                    $this->jangoMail->setError($e->getMessage());
+                    return FALSE;
                 }
             }
-            foreach($groupJango->getRecipients() as $e){
-                $group->addRecipient($e);// insertamos los miembros que estan en jango al objeto.
+            foreach ($groupJango->getRecipients() as $e) {
+                $group->addRecipient($e); // insertamos los miembros que estan en jango al objeto.
             }
             if ($result) {
                 return $group;
@@ -204,17 +204,15 @@ class GroupAdmin implements ChoiceListInterface
         $params = $this->prepareParameters(array(
             'GroupName' => $group->getName()
                 ));
-
         try {
             $response = $this->jangoMail->getJangoInstance()
                     ->Groups_GetMembers_XML($params);
             $xml = $response->Groups_GetMembers_XMLResult->any;
-            $recipients = array();
             foreach (simplexml_load_string($xml)->GroupMembers as $e) {
                 $recipient = new Recipient((string) $e->emailaddress);
-                $recipients[] = $recipient->setGroup($group);
+                $group->addRecipient($recipient);
             }
-            return $recipients;
+            return $group;
         } catch (SoapFault $e) {
             $this->jangoMail->setError($e->getMessage());
         } catch (\Exception $e) {

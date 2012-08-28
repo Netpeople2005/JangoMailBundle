@@ -11,25 +11,25 @@ use Netpeople\JangoMailBundle\Groups\GroupAdmin;
  *
  * @author manuel
  */
-class GroupType extends AbstractType
-{
+class GroupType extends AbstractType {
 
-    public function buildForm(FormBuilder $form, array $opciones)
-    {
+    public function buildForm(FormBuilder $form, array $opciones) {
 
         $form->add('name', 'text', array(
-            'label' => 'Nombre del Grupo',
-        ));
+                    'label' => 'Nombre del Grupo',
+                ))
+                ->add('recipients', 'collection', array(
+                    'label' => 'Destinatario',
+                    'type' => new RecipientType(),
+                ));
     }
 
     //put your code here
-    public function getName()
-    {
+    public function getName() {
         return 'grupo';
     }
 
-    public function getDefaultOptions(array $opciones)
-    {
+    public function getDefaultOptions(array $opciones) {
         return array(
             'data_class' => 'Netpeople\JangoMailBundle\Groups\Group'
         );

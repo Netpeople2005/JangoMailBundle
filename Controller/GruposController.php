@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Netpeople\JangoMailBundle\Groups\Group;
 use Netpeople\JangoMailBundle\Form\Type\GroupType;
+use Netpeople\JangoMailBundle\Recipients\Recipient;
 
 /**
  * Description of GruposController
@@ -33,7 +34,10 @@ class GruposController extends Controller
      */
     public function crearAction()
     {
-        $form = $this->createForm(new GroupType(), new Group());
+        $newgroup = new Group();
+        $newgroup->addRecipient(new Recipient('arp2312@gmail.com'));
+        $newgroup->addRecipient(new Recipient());
+        $form = $this->createForm(new GroupType(), $newgroup);
 
         if ($this->getRequest()->getMethod() === 'POST' &&
                 $form->bindRequest($this->getRequest())->isValid()) {

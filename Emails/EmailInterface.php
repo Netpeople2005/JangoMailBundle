@@ -4,6 +4,8 @@ namespace Netpeople\JangoMailBundle\Emails;
 
 use Netpeople\JangoMailBundle\Groups\Group;
 use Netpeople\JangoMailBundle\Recipients\RecipientInterface;
+use Netpeople\JangoMailBundle\Recipients\RecipientsCollection;
+use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Description of EmailTemplateInterface
@@ -13,27 +15,38 @@ use Netpeople\JangoMailBundle\Recipients\RecipientInterface;
 interface EmailInterface
 {
 
+    /**
+     * @return string 
+     */
     public function getEmailID();
 
+    /**
+     * @param string $emailID 
+     */
     public function setEmailID($emailID);
 
+    /**
+     * @return string
+     */
     public function getSubject();
 
-    public function getMessageHtml();
+    /**
+     * @return string 
+     */
+    public function getMessage();
 
-    public function setMessage($message);
-
-    public function getMessagePlain();
-
+    /**
+     * @return mixed 
+     */
     public function getOptions($name = NULL);
 
-    public function getOptionsString(array $options = array());
-
+    /**
+     *  @return ArrayCollection
+     */
     public function getGroups();
 
+    /**
+     * @return RecipientsCollection 
+     */
     public function getRecipients();
-
-    public function setRecipients($recipients);
-
-    public function addRecipient(RecipientInterface $recipients);
 }
