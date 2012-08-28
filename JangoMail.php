@@ -7,6 +7,7 @@ use Netpeople\JangoMailBundle\CampaignSending;
 use Netpeople\JangoMailBundle\TransactionalSending;
 use Symfony\Bundle\DoctrineBundle\Registry;
 use Netpeople\JangoMailBundle\Emails\EmailInterface;
+use Netpeople\JangoMailBundle\Exception\JangoMailException;
 
 /**
  * Description of JangoMail
@@ -181,7 +182,7 @@ class JangoMail
         if (count($email->getRecipients())) {
             return $this->getTransactional()->setEmail($email)->send();
         } else {
-            //aqui debemos informar que pasó
+            throw new JangoMailException("Estas Intentando enviar un correo que no tiene ni grupos ni recipientes asignados.");
         }
     }
 

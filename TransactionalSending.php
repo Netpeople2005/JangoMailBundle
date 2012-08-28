@@ -6,6 +6,7 @@ use Netpeople\JangoMailBundle\Emails\EmailInterface;
 use Netpeople\JangoMailBundle\JangoMail;
 use Netpeople\JangoMailBundle\Groups\Group;
 use Netpeople\JangoMailBundle\Recipients\Recipient;
+use Netpeople\JangoMailBundle\Exception\TransactionalException;
 
 /**
  * Description of CampaignSending
@@ -66,7 +67,7 @@ class TransactionalSending
     {
         $result = FALSE;
         if (!($this->email instanceof EmailInterface)) {
-            throw new \Exception('Debe llamar a setEmail() antes de hacer el Envío');
+            throw new TransactionalException('Debe llamar a setEmail() antes de hacer el Envío');
         }
         //si está desabilitado el envio, quitamos los destinatarios
         //y agregamos un test
@@ -84,7 +85,7 @@ class TransactionalSending
             }
         } else {
             if (!count($this->email->getRecipients())) {
-                throw new \Exception('Debe especificar al menos un Recipient antes de hacer el Envío');
+                throw new TransactionalException('Debe especificar al menos un Recipient antes de hacer el Envío');
             }
             try {
                 foreach ($this->email->getRecipients() as $recipient) {

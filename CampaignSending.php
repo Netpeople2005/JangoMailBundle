@@ -5,6 +5,7 @@ namespace Netpeople\JangoMailBundle;
 use Netpeople\JangoMailBundle\Emails\EmailInterface;
 use Netpeople\JangoMailBundle\JangoMail;
 use Netpeople\JangoMailBundle\Groups\Group;
+use Netpeople\JangoMailBundle\Exception\CampaignException;
 
 /**
  * Description of CampaignSending
@@ -69,10 +70,10 @@ class CampaignSending
     {
         $result = FALSE;
         if (!($this->email instanceof EmailInterface)) {
-            throw new \Exception('Debe llamar a setEmail() antes de hacer el Envío');
+            throw new CampaignException('Debe llamar a setEmail() antes de hacer el Envío');
         }
         if (!count($this->email->getGroups())) {
-            throw new \Exception('Debe agregar al menos un grupo antes de hacer el Envío');
+            throw new CampaignException('Debe agregar al menos un grupo antes de hacer el Envío');
         }
         try {
             //si está desabilitado el envio, lo enviamos como como transactional
