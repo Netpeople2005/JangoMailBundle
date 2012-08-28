@@ -36,6 +36,11 @@ interface EmailInterface
     public function getMessage();
 
     /**
+     * @param string $message 
+     */
+    public function setMessage($message);
+
+    /**
      * @return mixed 
      */
     public function getOptions($name = NULL);
