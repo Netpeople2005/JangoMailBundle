@@ -21,6 +21,8 @@ interface EmailInterface
 
     public function getMessageHtml();
 
+    public function setMessage($message);
+
     public function getMessagePlain();
 
     public function getOptions($name = NULL);
