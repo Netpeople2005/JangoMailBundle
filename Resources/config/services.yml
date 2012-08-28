@@ -18,14 +18,11 @@ services:
     jango_mail.campaign_sending:
         class: Netpeople\JangoMailBundle\CampaignSending
         arguments: ["@jango_mail"]
-        public: false
 
     jango_mail.transactional_sending:
         class: Netpeople\JangoMailBundle\TransactionalSending
         arguments: ["@jango_mail"]
-        public: false
 
     jango_mail.group_admin:
         class: Netpeople\JangoMailBundle\Groups\GroupAdmin
         arguments: ["@jango_mail"]
-        public: false
