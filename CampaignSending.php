@@ -76,7 +76,7 @@ class CampaignSending
             throw new CampaignException('Debe agregar al menos un grupo antes de hacer el Envío');
         }
         try {
-            //si está desabilitado el envio, lo enviamos como como transactional
+            //si está desabilitado el envio, lo enviamos como transactional
             //a un correo test
             if (TRUE === $this->jangoMail->getConfig('disable_delivery')) {
                 return $this->jangoMail->getTransactional()
