@@ -82,6 +82,7 @@ class TransactionalSending
             } else {
                 //si no hay a quien enviar, no lo enviamos y lo devolvemos.
                 $this->email->setEmailID('- TEST -');
+                $this->jangoMail->addEmailLog($this->email, 'SUCCESS');
                 return $this->email;
             }
         } else {
