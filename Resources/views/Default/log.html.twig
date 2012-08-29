@@ -5,9 +5,9 @@
     </div>
     <div class="modal-body">
         <fieldset>
-            <legend>Destinatarios</legend>
+            <legend>Mensaje</legend>
             {% autoescape false %}
-                {{ log.email.messageHtml }}
+                {{ log.email.message }}
             {% endautoescape %}
         </fieldset>
         <fieldset>
