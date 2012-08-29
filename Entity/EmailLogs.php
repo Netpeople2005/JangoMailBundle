@@ -47,7 +47,7 @@ class EmailLogs
     /**
      * @var string $error
      *
-     * @ORM\Column(name="datetime", type="date", length=255)
+     * @ORM\Column(name="datetime", type="datetime", length=255)
      */
     private $datetime;
 

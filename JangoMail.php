@@ -212,14 +212,14 @@ class JangoMail
             $log = new \Netpeople\JangoMailBundle\Entity\EmailLogs();
             $log->setEmail($email)->setResult($result)
                     ->setError($this->getError())
-                    ->setDatetime(new \DateTime());
+                    ->setDatetime(new \DateTime('now'));
             $eManager = $this->getEntityManager(get_class($log));
             $eManager->persist($log);
             $eManager->flush();
         }
         return $this;
     }
-    
+
     public function getOptionsString(array $options = array())
     {
         $opts = array();
