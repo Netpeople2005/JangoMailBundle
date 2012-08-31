@@ -32,6 +32,7 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('fromname')->end()
                     ->scalarNode('disable_delivery')->defaultValue(false)->end()
                     ->scalarNode('enable_log')->defaultValue(false)->end()
+                    ->scalarNode('transactional_group')->defaultValue(false)->end()
                     ->arrayNode('bcc')
                         ->prototype('scalar')->end()
                     ->end()
