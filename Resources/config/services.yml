@@ -5,6 +5,7 @@ parameters:
           password: ~
           fromemail: ~
           fromname: ~
+          transactional_group: ~
 
 services:
     jango_mail:

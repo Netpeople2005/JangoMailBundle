@@ -20,6 +20,9 @@
         </fieldset>
         <fieldset>
             <legend>Opciones</legend>
+            {% for name, val in log.email.options %}
+                    <li>{{ name }} => {{ val }}</li>
+            {% endfor %}
         </fieldset>
     </div>
     <div class="modal-footer">

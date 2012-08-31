@@ -220,11 +220,15 @@ class JangoMail
         return $this;
     }
 
-    public function getOptionsString(array $options = array())
+    public function getOptionsString(EmailInterface $email, array $options = array())
     {
+        $email->setOptions($options);
+        $options = $email->getOptions();
         $opts = array();
         foreach ($options as $index => $value) {
-            $opts[] = "$index=$value";
+            if ($value) {
+                $opts[] = "$index=$value";
+            }
         }
         return join(',', $opts);
     }
