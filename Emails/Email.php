@@ -89,18 +89,9 @@ class Email implements EmailInterface
         return $this->options;
     }
 
-    public function getOptionsString(array $options = array())
-    {
-        $this->options += $options;
-        foreach ($this->options as $index => $value) {
-            $options[] = "$index=$value";
-        }
-        return join(',', $options);
-    }
-
     public function setOptions(array $options)
     {
-        $this->options = $options;
+        $this->options = $this->options + $options;
         return $this;
     }
 

@@ -46,6 +46,11 @@ interface EmailInterface
     public function getOptions($name = NULL);
 
     /**
+     * @return mixed 
+     */
+    public function setOptions(array $options);
+
+    /**
      *  @return ArrayCollection
      */
     public function getGroups();
