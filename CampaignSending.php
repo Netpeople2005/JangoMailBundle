@@ -60,7 +60,7 @@ class CampaignSending
             'Subject' => $this->email->getSubject(),
             'MessagePlain' => strip_tags($this->email->getMessage()),
             'MessageHTML' => $this->email->getMessage(),
-            'Options' => $this->jangoMail->getOptionsString(array(
+            'Options' => $this->jangoMail->getOptionsString($this->email, array(
                 'BCC' => join(';', $config['bcc'])
             )),
         );

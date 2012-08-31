@@ -57,8 +57,9 @@ class TransactionalSending
             'Subject' => $this->email->getSubject(),
             'MessagePlain' => strip_tags($this->email->getMessage()),
             'MessageHTML' => $this->email->getMessage(),
-            'Options' => $this->jangoMail->getOptionsString(array(
-                'BCC' => join(';', $config['bcc'])
+            'Options' => $this->jangoMail->getOptionsString($this->email, array(
+                'BCC' => join(';', $config['bcc']),
+                'TransactionalGroupID' => $config['transactional_group'],
             )),
         );
     }
@@ -82,6 +83,12 @@ class TransactionalSending
             } else {
                 //si no hay a quien enviar, no lo enviamos y lo devolvemos.
                 $this->email->setEmailID('- TEST -');
+                //establesco las opciones para el email.
+                $config = $this->jangoMail->getConfig();
+                $this->email->setOptions(array(
+                    'BCC' => join(';', $config['bcc']),
+                    'TransactionalGroupID' => $config['transactional_group'],
+                ));
                 $this->jangoMail->addEmailLog($this->email, 'SUCCESS');
                 return $this->email;
             }
