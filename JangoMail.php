@@ -179,11 +179,16 @@ class JangoMail
         if (count($email->getGroups())) {
             return $this->getCampaign()->setEmail($email)->send();
         }
+        /*
+         * Si no tiene grupos y tiene recipientes, enviamos el correo como transactional
+         */
         if (count($email->getRecipients())) {
             return $this->getTransactional()->setEmail($email)->send();
-        } else {
-            throw new JangoMailException("Estas Intentando enviar un correo que no tiene ni grupos ni recipientes asignados.");
         }
+        /*
+         * Si llegamos acá es porque el email no tiene ni grupos ni recipientes.
+         */
+        throw new JangoMailException("Estas Intentando enviar un correo que no tiene ni grupos ni recipientes asignados.");
     }
 
     /**
