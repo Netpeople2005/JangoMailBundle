@@ -3,41 +3,16 @@
 namespace Netpeople\JangoMailBundle;
 
 use Netpeople\JangoMailBundle\Emails\EmailInterface;
-use Netpeople\JangoMailBundle\JangoMail;
-use Netpeople\JangoMailBundle\Groups\Group;
 use Netpeople\JangoMailBundle\Exception\CampaignException;
+use Netpeople\JangoMailBundle\AbstractSending;
 
 /**
  * Description of CampaignSending
  *
  * @author manuel
  */
-class CampaignSending
+class CampaignSending extends AbstractSending
 {
-
-    protected $jangoMail = NULL;
-
-    /**
-     *
-     * @var EmailInterface 
-     */
-    protected $email = NULL;
-
-    public function __construct(JangoMail $jangoMail)
-    {
-        $this->jangoMail = $jangoMail;
-    }
-
-    public function setEmail(EmailInterface $email)
-    {
-        $this->email = $email;
-        return $this;
-    }
-
-    public function getEmail()
-    {
-        return $this->email;
-    }
 
     public function getParametersToSend()
     {
@@ -60,9 +35,7 @@ class CampaignSending
             'Subject' => $this->email->getSubject(),
             'MessagePlain' => strip_tags($this->email->getMessage()),
             'MessageHTML' => $this->email->getMessage(),
-            'Options' => $this->jangoMail->getOptionsString($this->email, array(
-                'BCC' => join(';', $config['bcc'])
-            )),
+            'Options' => $this->getOptionsString(),
         );
     }
 
@@ -97,6 +70,44 @@ class CampaignSending
         }
         $this->jangoMail->addEmailLog($this->email, $result ? 'SUCCESS' : 'ERROR');
         return $result;
+    }
+
+    public function getValidOptions()
+    {
+        return array(
+            'ReplyTo' => null,
+            'BCC' => null,
+            'CharacterSet' => null,
+            'Encoding' => null,
+            'Priority' => null,
+            'NoDuplicates' => null,
+            'UseSystemMAILFROM' => null,
+            'Receipt' => null,
+            'Wrapping' => null,
+            'ClickTrack' => null,
+            'OpenTrack' => null,
+            'NoClickTrackText' => null,
+            'SendDate' => null,
+            'ThrottlingNumberEmails' => null,
+            'ThrottlingNumberMinutes' => null,
+            'DoNotSendTo' => null,
+            'SuppressionGroups' => null,
+            'Triggers' => null,
+            'EmbedImages' => null,
+            'Attachment1' => null,
+            'Attachment2' => null,
+            'Attachment3' => null,
+            'Attachment4' => null,
+            'Attachment5' => null,
+            'SMS' => null,
+            'Template' => null,
+            'CustomCampaignID' => null,
+            'PreprocessNow' => null,
+            'PreprocessOnly' => null,
+            'TransactionalGroupID' => null,
+            'CC' => null,
+            'SkipUnsubCheck' => null,
+        );
     }
 
 }

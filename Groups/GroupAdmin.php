@@ -248,4 +248,32 @@ class GroupAdmin implements ChoiceListInterface
                 ) + $aditionals;
     }
 
+    public function getChoicesForValues(array $values) {
+        
+    }
+
+    public function getIndicesForChoices(array $choices) {
+        
+    }
+
+    public function getIndicesForValues(array $values) {
+        
+    }
+
+    public function getPreferredViews() {
+        
+    }
+
+    public function getRemainingViews() {
+        
+    }
+
+    public function getValues() {
+        
+    }
+
+    public function getValuesForChoices(array $choices) {
+        
+    }
+
 }

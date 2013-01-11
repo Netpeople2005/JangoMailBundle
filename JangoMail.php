@@ -5,7 +5,7 @@ namespace Netpeople\JangoMailBundle;
 use Netpeople\JangoMailBundle\Groups\GroupAdmin;
 use Netpeople\JangoMailBundle\CampaignSending;
 use Netpeople\JangoMailBundle\TransactionalSending;
-use Symfony\Bundle\DoctrineBundle\Registry;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Netpeople\JangoMailBundle\Emails\EmailInterface;
 use Netpeople\JangoMailBundle\Exception\JangoMailException;
 
@@ -227,8 +227,7 @@ class JangoMail
 
     public function getOptionsString(EmailInterface $email, array $options = array())
     {
-        $email->setOptions($options);
-        $options = $email->getOptions();
+        $options = ((array)$email->getOptions()) + $options;
         $opts = array();
         foreach ($options as $index => $value) {
             if ($value) {
