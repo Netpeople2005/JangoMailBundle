@@ -6,24 +6,21 @@ Bundle que ofrece una API para el envio de correos con jangomail
 Instalación
 -----------
 
-Descargar el repositorio y colocarlo en:
+Usando composer (Previamente instalado) añadir el paquete al composer.json
 
 ::
 
-    ProyectoSymfony/vendors/bundles/Netpeople/JangoMailBundle
+    {
+        "require": {
+            "optime/jangomail": "dev-master"
+        }
+    }
 
-Agregar el Espacio de Nombres al autoloades
+Luego de este ejecutar el comando:
 
 ::
 
-    <?php
-
-    // app/autoload.php
-    $loader->registerNamespaces(array(
-        // ...
-        'Netpeople'         => __DIR__.'/../vendor/bundles',
-        // ...
-    ));
+    composer update //ó composer install dependiendo de si ya se tiene una instalación previa de paquetes
 
 Registrar el Bundle en el AppKernel
 
