@@ -17,5 +17,9 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
         ]
-    }
+    },
+    "autoload": {
+        "psr-0": { "Ku\\JangoMailBundle": "" }
+    },
+    "target-dir": "Ku/JangoMailBundle",
 }
