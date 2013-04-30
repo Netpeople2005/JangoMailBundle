@@ -21,5 +21,5 @@
     "autoload": {
         "psr-0": { "Ku\\JangoMailBundle": "" }
     },
-    "target-dir": "Ku/JangoMailBundle",
+    "target-dir": "Ku/JangoMailBundle"
 }
