@@ -8,7 +8,7 @@ Instalación
 
 Usando composer (Previamente instalado) añadir el paquete al composer.json
 
-::
+.. code-block:: json
 
     {
         "require": {
@@ -24,7 +24,7 @@ Luego de este ejecutar el comando:
 
 Registrar el Bundle en el AppKernel
 
-::
+.. code-block:: php
 
     <?php
 
@@ -37,7 +37,7 @@ Registrar el Bundle en el AppKernel
 
 Agregar la configuración para JANGO en el config.yml
 
-::
+.. code-block:: yml
 
     #app/config/config.yml 
     jango_mail:
@@ -57,7 +57,7 @@ Ademas de ofrecer un API de comunicación con jango, este bundle ofrece un entor
 
 Para lograr esto solo debemos incluir en el archivo routing_dev.yml ( preferiblemente routin_dev para que no esté disponible en produccion ) de la app lo siguiente:
 
-::
+.. code-block:: yml
 
     #app/config/routing_dev.yml
     _jango_mail:
