@@ -7,6 +7,7 @@ use FOS\UserBundle\Mailer\TwigSwiftMailer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Netpeople\JangoMailBundle\Emails\Email;
 use Netpeople\JangoMailBundle\Exception\JangoMailException;
+use Symfony\Component\HttpKernel\Log\LoggerInterface;
 
 /**
  * Description of JangoMailFosUser
@@ -22,7 +23,13 @@ class JangoMailFosUser extends TwigSwiftMailer
      */
     protected $jango;
 
-    function __construct(JangoMail $jango, UrlGeneratorInterface $router, \Twig_Environment $twig, array $parameters)
+    /**
+     *
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    function __construct(JangoMail $jango, UrlGeneratorInterface $router, \Twig_Environment $twig, array $parameters, LoggerInterface $logger = null)
     {
         $this->jango = $jango;
         $this->router = $router;
@@ -52,7 +59,9 @@ class JangoMailFosUser extends TwigSwiftMailer
         try {
             $this->jango->send($message);
         } catch (JangoMailException $e) {
-            
+            if($this->logger){
+                $this->logger->error($e->getMessage());
+            }
         }
     }
 
