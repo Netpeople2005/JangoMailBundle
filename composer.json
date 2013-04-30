@@ -19,7 +19,7 @@
         ]
     },
     "autoload": {
-        "psr-0": { "Ku\\JangoMailBundle": "" }
+        "psr-0": { "Netpeople\\JangoMailBundle": "" }
     },
-    "target-dir": "Ku/JangoMailBundle"
+    "target-dir": "Netpeople/JangoMailBundle"
 }
