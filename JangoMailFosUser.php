@@ -58,7 +58,7 @@ class JangoMailFosUser extends TwigSwiftMailer
                 ->setMessage($htmlBody ? : $textBody);
 
         try {
-            $this->jango->send($message);
+            $this->jango->send($email);
         } catch (JangoMailException $e) {
             if($this->logger){
                 $this->logger->error($e->getMessage());
