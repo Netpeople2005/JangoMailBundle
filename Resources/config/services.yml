@@ -10,7 +10,7 @@ parameters:
         template:
             confirmation: %fos_user.registration.confirmation.template%
             resetting: %fos_user.resetting.email.template%
-    from_email:
+        from_email:
             confirmation: %fos_user.registration.confirmation.from_email%
             resetting: %fos_user.resetting.email.from_email%
 
