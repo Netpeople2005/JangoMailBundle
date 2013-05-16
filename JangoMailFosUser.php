@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Netpeople\JangoMailBundle\Emails\Email;
 use Netpeople\JangoMailBundle\Exception\JangoMailException;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
+use Netpeople\JangoMailBundle\Recipients\Recipient;
 
 /**
  * Description of JangoMailFosUser
@@ -52,7 +53,7 @@ class JangoMailFosUser extends TwigSwiftMailer
 
         $email = new Email();
 
-        $email->addRecipient($toEmail)
+        $email->addRecipient(new Recipient($toEmail))
                 ->setSubject($subject)
                 ->setMessage($htmlBody ? : $textBody);
 
