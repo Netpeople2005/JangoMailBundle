@@ -21,22 +21,6 @@ class JangoMailExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-        /*
-         *  Verificamos que los parametros necesarios para configurar 
-         *  jango esten especificados. 
-         */
-        if (!isset($config['username']) || empty($config['username'])){
-            throw new \InvalidArgumentException('El parametro username es necesario para trabajar con JangoMail');
-        }
-        if (!isset($config['password']) || empty($config['password'])){
-            throw new \InvalidArgumentException('El parametro <b>password</b> es necesario para trabajar con JangoMail');
-        }
-        if (!isset($config['fromemail']) || empty($config['fromemail'])){
-            throw new \InvalidArgumentException('El parametro <b>fromemail</b> es necesario para trabajar con JangoMail');
-        }
-        if (!isset($config['fromname']) || empty($config['fromname'])){
-            throw new \InvalidArgumentException('El parametro <b>fromname</b> es necesario para trabajar con JangoMail');
-        }
                 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');

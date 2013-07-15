@@ -1,4 +1,8 @@
 parameters:
+#    fos_user.registration.confirmation.template: null
+#    fos_user.resetting.email.template: null
+#    fos_user.registration.confirmation.from_email: null
+#    fos_user.resetting.email.from_email: null
     jango_mail.config:
           url_jango: http://api.jangomail.com/api.asmx?WSDL
           username: ~
