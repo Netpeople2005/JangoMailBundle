@@ -32,9 +32,22 @@ class CampaignReporting
      * GetMassEmailReport
      * 
      * Gets the reporting statistics on a particular mass e-mail. Returns an array of integers.
+     *  
+     * @param \Netpeople\JangoMailBundle\Emails\EmailInterface $email
+     * @return array
      * 
-     * @see http://api.jangomail.com/help/html/fff2cda4-cf49-d2a5-864f-92f3d936f25d.htm
+     *    array(
+     *          'recipients' => (int),
+     *          'opened' => (int),
+     *          'clicked' => (int),
+     *          'unsubscribes' => (int),
+     *          'bounces' => (int),
+     *          'forwards' => (int),
+     *          'replies' => (int),
+     *          'page_views' => (int),
+     *    );
      * 
+     * @throws JangoMailException
      */
     public function report(EmailInterface $email)
     {
@@ -45,7 +58,7 @@ class CampaignReporting
 
             $result = $result->GetMassEmailReportResult->int;
 
-            return new ParameterBag(array(
+            return array(
                 'recipients' => $result[0],
                 'opened' => $result[1],
                 'clicked' => $result[2],
@@ -54,12 +67,35 @@ class CampaignReporting
                 'forwards' => $result[5],
                 'replies' => $result[6],
                 'page_views' => $result[7],
-            ));
+            );
         } catch (SoapFault $e) {
             throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
+    
+    /**
+     * Reports_GetAllClicks_XML
+     * 
+     * Retrieves list of recipients that have clicked any link in a mass e-mail campaign. Returns an XML document.
+     * 
+     * @param \Netpeople\JangoMailBundle\Emails\EmailInterface $email
+     * @param string $orderBy
+     * @param string $sortOrder
+     * @return array
+     * 
+     * array(
+     *      array(
+     *          'email' => (string),
+     *           'url' => (string),
+     *           'link_position' => (int),
+     *           'click_date_time' => DateTime,
+     *      ),
+     *      ...
+     * )
+     * 
+     * @throws JangoMailException
+     */
     public function clicks(EmailInterface $email, $orderBy = Reporting::SORT_BY_EMAIL
     , $sortOrder = Reporting::SORT_ORDER_ASC)
     {
@@ -80,7 +116,6 @@ class CampaignReporting
                     'url' => (string) $e->URL,
                     'link_position' => (string) $e->LinkPosition,
                     'click_date_time' => new DateTime((string) $e->ClickDateTime),
-                    'click_date_time_string' => (string) $e->ClickDateTime,
                 );
             }
 
@@ -90,6 +125,28 @@ class CampaignReporting
         }
     }
 
+    /**
+     * Reports_GetOpens_XML
+     * 
+     * Retrieves list of recipients that have opened a mass e-mail campaign. Returns an XML document.
+     * 
+     * @param \Netpeople\JangoMailBundle\Emails\EmailInterface $email
+     * @param string $orderBy
+     * @param string $sortOrder
+     * @param string $whitchTime
+     * @return array
+     * 
+     * array(
+     *      array(
+     *          'email' => (string),
+     *           'opens' => (int),
+     *           'open_date_time' => DateTime,
+     *      ),
+     *      ...
+     * )
+     * 
+     * @throws JangoMailException
+     */
     public function opens(EmailInterface $email, $orderBy = Reporting::SORT_BY_EMAIL
     , $sortOrder = Reporting::SORT_ORDER_ASC, $whitchTime = Reporting::WHICH_TIME_FIRST)
     {
@@ -102,15 +159,43 @@ class CampaignReporting
             ));
 
             $xml = $result->Reports_GetOpens_XMLResult->any;
-            var_dump(simplexml_load_string($xml));die;
+
             $recipients = array();
 
-            foreach (simplexml_load_string($xml)->Clicks as $e) {
+            foreach (simplexml_load_string($xml)->Opens as $e) {
                 $recipients[] = array(
                     'email' => (string) $e->EmailAddress,
-                    'url' => (string) $e->URL,
-                    'link_position' => (string) $e->LinkPosition,
-                    'click_date_time' => new DateTime((string) $e->ClickDateTime),
+                    'opens' => (string) $e->NumberOpens,
+                    'open_date_time' => new DateTime((string) $e->OpenDateTime),
+                );
+            }
+
+            return $recipients;
+        } catch (SoapFault $e) {
+            throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * 
+     * @param \Netpeople\JangoMailBundle\Emails\EmailInterface $email
+     * @return type
+     * @throws JangoMailException
+     */
+    public function bounces(EmailInterface $email)
+    {
+        try {
+            $result = $this->jango->call('Reports_GetBouncesByCampaign_XML2', array(
+                'JobID' => $email->getEmailID(),
+            ));
+
+            $xml = $result->Reports_GetBouncesByCampaign_XML2Result->any;
+            var_dump(simplexml_load_string($xml));
+            $recipients = array();
+
+            foreach (simplexml_load_string($xml)->Bounces as $e) {
+                $recipients[] = array(
+                    'email' => (string) $e->EmailAddress,
                 );
             }
 
