@@ -2,9 +2,12 @@
 
 namespace Netpeople\JangoMailBundle\Groups;
 
+use Exception;
+use Netpeople\JangoMailBundle\Exception\JangoMailException;
 use Netpeople\JangoMailBundle\Groups\Group;
 use Netpeople\JangoMailBundle\JangoMail;
 use Netpeople\JangoMailBundle\Recipients\Recipient;
+use SoapFault;
 use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceListInterface;
 
 /**
@@ -20,7 +23,7 @@ class GroupAdmin implements ChoiceListInterface
      *
      * @var JangoMail 
      */
-    protected $jangoMail = NULL;
+    protected $jangoMail;
 
     public function __construct(JangoMail $jangoMail)
     {
@@ -34,22 +37,20 @@ class GroupAdmin implements ChoiceListInterface
      */
     public function addGroup(Group $group)
     {
-        $params = $this->prepareParameters(array(
-            'GroupName' => $group->getName(),
-                ));
         try {
-            $response = $this->jangoMail->getJangoInstance()
-                    ->AddGroup($params);
+            $response = $this->jangoMail->call('AddGroup', array(
+                'GroupName' => $group->getName(),
+            ));
             $response = preg_split('/\n/m', $response->AddGroupResult);
             if (0 == $response[0]) {
                 return $group->setGroupID($response[2]);
             } else {
                 $this->jangoMail->setError("No se pudo crear el Grupo");
             }
-        } catch (\Exception $e) {
-            $this->jangoMail->setError($e->getMessage());
+        } catch (SoapFault $e) {
+            throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
         }
-        return FALSE;
+        return false;
     }
 
     /**
@@ -64,27 +65,25 @@ class GroupAdmin implements ChoiceListInterface
      */
     public function editGroup(Group $group, $newName)
     {
-        $params = $this->prepareParameters(array(
-            'OldGroupName' => $group->getName(),
-            'NewGroupName' => $newName,
-                ));
         try {
-            $response = $this->jangoMail->getJangoInstance()
-                    ->Groups_Rename($params);
+            $response = $this->jangoMail->call('Groups_Rename', array(
+                'OldGroupName' => $group->getName(),
+                'NewGroupName' => $newName,
+            ));
             $response = preg_split('/\n/m', $response->AddGroupResult);
             if (0 == $response[0]) {
                 return $response[2]; //el id del grupo
             }
-        } catch (\Exception $e) {
-            $this->jangoMail->setError($e->getMessage());
+        } catch (SoapFault $e) {
+            throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
         }
-        return FALSE;
+        return false;
     }
 
     /**
      * Obtiene un grupo a travez del ID del mismo.
      * @param string $groupID
-     * @return Group|NULL el grupo encontrado ó nulo si no existe.
+     * @return Group|null el grupo encontrado ó nulo si no existe.
      */
     public function getGroupByGroupID($groupID)
     {
@@ -93,7 +92,7 @@ class GroupAdmin implements ChoiceListInterface
                 return $group;
             }
         }
-        return NULL;
+        return null;
     }
 
     /**
@@ -103,30 +102,28 @@ class GroupAdmin implements ChoiceListInterface
      */
     public function addMembers(Group $group)
     {
-        $params = $this->prepareParameters(array(
+        $params = array(
             'GroupName' => $group->getName(),
             'FieldNames' => array('Name'),
-                ));
+        );
 
-        $result = TRUE;
+        $result = true;
 
         /* @var $groupJango Group */
         $groupJango = $this->getMembers(new Group($group->getName()));
-        if ($groupJango !== FALSE) {
+        if ($groupJango !== false) {
             $group->getRecipients()->removeIfExistInCollection($groupJango->getRecipients());
             foreach ($group->getRecipients() as $e) {
                 $params['EmailAddress'] = $e->getEmail();
                 $params['FieldValues'] = array($e->getName());
                 try {
-                    $response = $this->jangoMail->getJangoInstance()
-                            ->AddGroupMember($params);
+                    $response = $this->jangoMail->call('AddGroupMember', $params);
                     $response = preg_split('/\n/m', $response->AddGroupMemberResult);
                     if (!0 == $response[0]) {
-                        $result = FALSE;
+                        $result = false;
                     }
-                } catch (\Exception $e) {
-                    $this->jangoMail->setError($e->getMessage());
-                    return FALSE;
+                } catch (SoapFault $e) {
+                    throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
                 }
             }
             foreach ($groupJango->getRecipients() as $e) {
@@ -136,11 +133,11 @@ class GroupAdmin implements ChoiceListInterface
                 return $group;
             } else {
                 $this->jangoMail->setError("No se Pudieron Guardar todos los Destinatarios");
-                return FALSE;
+                return false;
             }
         } else {
             $this->jangoMail->setError("No se pudo obtener la Información del Grupo en Jango");
-            return FALSE;
+            return false;
         }
     }
 
@@ -151,20 +148,15 @@ class GroupAdmin implements ChoiceListInterface
      */
     public function countMembers(Group $group)
     {
-        $params = $this->prepareParameters(array(
-            'GroupName' => $group->getName(),
-                ));
-
         try {
-            $response = $this->jangoMail->getJangoInstance()
-                    ->GetGroupMemberCount($params);
+            $response = $this->jangoMail->call('GetGroupMemberCount', array(
+                'GroupName' => $group->getName(),
+            ));
             return (int) $response->GetGroupMemberCountResult;
         } catch (SoapFault $e) {
-            $this->jangoMail->setError($e->getMessage());
-        } catch (\Exception $e) {
-            $this->jangoMail->setError($e->getMessage());
+            throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
         }
-        return FALSE;
+        return false;
     }
 
     /**
@@ -173,11 +165,8 @@ class GroupAdmin implements ChoiceListInterface
      */
     public function getGroups()
     {
-        $params = $this->prepareParameters();
-
         try {
-            $response = $this->jangoMail->getJangoInstance()
-                    ->Groups_GetList_XML($params);
+            $response = $this->jangoMail->call('Groups_GetList_XML');
             $xml = $response->Groups_GetList_XMLResult->any;
             $groups = array();
             foreach (simplexml_load_string($xml)->Groups as $e) {
@@ -187,12 +176,10 @@ class GroupAdmin implements ChoiceListInterface
                         ->setMemberCount((string) $e->MemberCount);
             }
             return $groups;
-        } catch (SoapFault $e) {
-            $this->jangoMail->setError($e->getMessage());
-        } catch (\Exception $e) {
-            $this->jangoMail->setError($e->getMessage());
+        } catch (Exception $e) {
+            throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
         }
-        return FALSE;
+        return false;
     }
 
     /**
@@ -201,24 +188,21 @@ class GroupAdmin implements ChoiceListInterface
      */
     public function getMembers(Group $group)
     {
-        $params = $this->prepareParameters(array(
-            'GroupName' => $group->getName()
-                ));
         try {
-            $response = $this->jangoMail->getJangoInstance()
-                    ->Groups_GetMembers_XML($params);
+            $response = $this->jangoMail
+                    ->call('Groups_GetMembers_XML', array(
+                'GroupName' => $group->getName()
+            ));
             $xml = $response->Groups_GetMembers_XMLResult->any;
             foreach (simplexml_load_string($xml)->GroupMembers as $e) {
                 $recipient = new Recipient((string) $e->emailaddress);
                 $group->addRecipient($recipient);
             }
             return $group;
-        } catch (SoapFault $e) {
-            $this->jangoMail->setError($e->getMessage());
-        } catch (\Exception $e) {
-            $this->jangoMail->setError($e->getMessage());
+        } catch (Exception $e) {
+            throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
         }
-        return FALSE;
+        return false;
     }
 
     /**
@@ -238,41 +222,38 @@ class GroupAdmin implements ChoiceListInterface
         return $choices;
     }
 
-    protected function prepareParameters(array $aditionals = array())
+    public function getChoicesForValues(array $values)
     {
-        $config = $this->jangoMail->getConfig();
-
-        return array(
-            'Username' => $config['username'],
-            'Password' => $config['password'],
-                ) + $aditionals;
-    }
-
-    public function getChoicesForValues(array $values) {
         
     }
 
-    public function getIndicesForChoices(array $choices) {
+    public function getIndicesForChoices(array $choices)
+    {
         
     }
 
-    public function getIndicesForValues(array $values) {
+    public function getIndicesForValues(array $values)
+    {
         
     }
 
-    public function getPreferredViews() {
+    public function getPreferredViews()
+    {
         
     }
 
-    public function getRemainingViews() {
+    public function getRemainingViews()
+    {
         
     }
 
-    public function getValues() {
+    public function getValues()
+    {
         
     }
 
-    public function getValuesForChoices(array $choices) {
+    public function getValuesForChoices(array $choices)
+    {
         
     }
 

@@ -2,10 +2,11 @@
 
 namespace Netpeople\JangoMailBundle;
 
-use Netpeople\JangoMailBundle\Emails\EmailInterface;
-use Netpeople\JangoMailBundle\Recipients\Recipient;
-use Netpeople\JangoMailBundle\Exception\TransactionalException;
 use Netpeople\JangoMailBundle\AbstractSending;
+use Netpeople\JangoMailBundle\Emails\EmailInterface;
+use Netpeople\JangoMailBundle\Exception\TransactionalException;
+use Netpeople\JangoMailBundle\Recipients\Recipient;
+use SoapFault;
 
 /**
  * Description of CampaignSending
@@ -20,8 +21,6 @@ class TransactionalSending extends AbstractSending
         $config = $this->jangoMail->getConfig();
 
         return array(
-            'Username' => $config['username'],
-            'Password' => $config['password'],
             'FromEmail' => $config['fromemail'],
             'FromName' => $config['fromname'],
             'ToEmailAddress' => $recipient->getEmail(),
@@ -34,13 +33,13 @@ class TransactionalSending extends AbstractSending
 
     public function send()
     {
-        $result = FALSE;
+        $result = false;
         if (!($this->email instanceof EmailInterface)) {
             throw new TransactionalException('Debe llamar a setEmail() antes de hacer el Envío');
         }
         //si está desabilitado el envio, quitamos los destinatarios
         //y agregamos un test
-        if (TRUE === $this->jangoMail->getConfig('disable_delivery')) {
+        if (true === $this->jangoMail->getConfig('disable_delivery')) {
             //si hay correos de prueba definidos en el config.yml
             //colocamos a uno de ellos como destinatario.
             if (count($this->jangoMail->getConfig('bcc'))) {
@@ -64,14 +63,14 @@ class TransactionalSending extends AbstractSending
 
     protected function _send()
     {
-        $result = FALSE;
+        $result = false;
         if (!count($this->email->getRecipients())) {
             throw new TransactionalException('Debe especificar al menos un Recipient antes de hacer el Envío');
         }
         try {
             foreach ($this->email->getRecipients() as $recipient) {
-                $response = $this->jangoMail->getJangoInstance()
-                        ->SendTransactionalEmail($this->getParametersToSend($recipient));
+                $response = $this->jangoMail
+                        ->call('SendTransactionalEmail', $this->getParametersToSend($recipient));
             }
             $response = preg_split('/\n/m', $response->SendTransactionalEmailResult);
 
@@ -81,8 +80,8 @@ class TransactionalSending extends AbstractSending
             } else {
                 $this->jangoMail->setError("No se pudo enviar el Correo (Asunto: {$this->email->getSubject()})");
             }
-        } catch (\Exception $e) {
-            $this->jangoMail->setError($e->getMessage());
+        } catch (SoapFault $e) {
+            throw new TransactionalException($e->getMessage(), $e->getCode(), $e);
         }
         $this->jangoMail->addEmailLog($this->email, $result ? 'SUCCESS' : 'ERROR');
         return $result;

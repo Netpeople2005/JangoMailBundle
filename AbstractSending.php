@@ -17,13 +17,13 @@ abstract class AbstractSending
      *
      * @var JangoMail
      */
-    protected $jangoMail = NULL;
+    protected $jangoMail;
 
     /**
      *
      * @var EmailInterface 
      */
-    protected $email = NULL;
+    protected $email;
 
     public function __construct(JangoMail $jangoMail)
     {
@@ -52,13 +52,15 @@ abstract class AbstractSending
 
     protected function prepareOptions()
     {
-        $options = ((array) $this->email->getOptions()) + (array) $this->jangoMail->getConfig('options');
+        $options = ((array) $this->email->getOptions()) + (array) $this
+                ->jangoMail->getConfig('options');
 
         $options = array_intersect_key($options, $this->getValidOptions());
 
         if (isset($options['BCC']) && is_array($options['BCC']) &&
                 is_array($this->jangoMail->getConfig('bcc'))) {
-            $options['BCC'] = array_merge($options['BCC'], $this->jangoMail->getConfig('bcc'));
+            $options['BCC'] = array_merge($options['BCC'], $this
+                    ->jangoMail->getConfig('bcc'));
         }
 
         foreach ($options as $index => $value) {

@@ -2,9 +2,10 @@
 
 namespace Netpeople\JangoMailBundle;
 
+use Netpeople\JangoMailBundle\AbstractSending;
 use Netpeople\JangoMailBundle\Emails\EmailInterface;
 use Netpeople\JangoMailBundle\Exception\CampaignException;
-use Netpeople\JangoMailBundle\AbstractSending;
+use SoapFault;
 
 /**
  * Description of CampaignSending
@@ -24,8 +25,6 @@ class CampaignSending extends AbstractSending
         }
 
         return array(
-            'Username' => $config['username'],
-            'Password' => $config['password'],
             'FromEmail' => $config['fromemail'],
             'FromName' => $config['fromname'],
             'ToGroups' => join(',', $toGroups),
@@ -41,7 +40,7 @@ class CampaignSending extends AbstractSending
 
     public function send()
     {
-        $result = FALSE;
+        $result = false;
         if (!($this->email instanceof EmailInterface)) {
             throw new CampaignException('Debe llamar a setEmail() antes de hacer el Envío');
         }
@@ -51,12 +50,12 @@ class CampaignSending extends AbstractSending
         try {
             //si está desabilitado el envio, lo enviamos como transactional
             //a un correo test
-            if (TRUE === $this->jangoMail->getConfig('disable_delivery')) {
+            if (true === $this->jangoMail->getConfig('disable_delivery')) {
                 return $this->jangoMail->getTransactional()
                                 ->setEmail($this->email)->send();
             }
-            $response = $this->jangoMail->getJangoInstance()
-                    ->SendMassEmail($this->getParametersToSend());
+            $response = $this->jangoMail
+                    ->call('SendMassEmail', $this->getParametersToSend());
             $response = preg_split('/\n/m', $response->SendMassEmailResult);
 
             if (0 == $response[0]) {
@@ -65,8 +64,8 @@ class CampaignSending extends AbstractSending
             } else {
                 $this->jangoMail->setError("No se pudo enviar el Correo (Asunto: {$this->email->getSubject()})");
             }
-        } catch (\Exception $e) {
-            $this->jangoMail->setError($e->getMessage());
+        } catch (SoapFault $e) {
+            throw new CampaignException($e->getMessage(), $e->getCode(), $e);
         }
         $this->jangoMail->addEmailLog($this->email, $result ? 'SUCCESS' : 'ERROR');
         return $result;

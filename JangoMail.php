@@ -25,27 +25,21 @@ class JangoMail
 
     /**
      *
-     * @var GroupAdmin
-     */
-    protected $groupAdmin = NULL;
-
-    /**
-     *
      * @var CampaignSending 
      */
-    protected $campaignSending = NULL;
+    protected $campaignSending;
 
     /**
      *
      * @var TransactionalSending 
      */
-    protected $transactionalSending = NULL;
+    protected $transactionalSending;
 
     /**
      *
      * @var \SoapClient
      */
-    protected $jangoClient = NULL;
+    protected $jangoClient;
 
     /**
      *
@@ -81,9 +75,9 @@ class JangoMail
      *
      * @return \Doctrine\ORM\EntityManager 
      */
-    public function getEntityManager($class)
+    public function getManager()
     {
-        return $this->registry->getEntityManagerForClass($class);
+        return $this->registry->getManager();
     }
 
     /**
@@ -101,33 +95,13 @@ class JangoMail
      *
      * @return array 
      */
-    public function getConfig($name = NULL)
+    public function getConfig($name = null)
     {
         if ($name) {
             return array_key_exists($name, $this->config) ?
-                    $this->config[$name] : NULL;
+                    $this->config[$name] : null;
         }
         return $this->config;
-    }
-
-    /**
-     * 
-     * @return GroupAdmin 
-     */
-    public function getGroupAdmin()
-    {
-        return $this->groupAdmin;
-    }
-
-    /**
-     *
-     * @param GroupAdmin $group
-     * @return \Netpeople\JangoMailBundle\JangoMail 
-     */
-    public function setGroupAdmin(GroupAdmin $group)
-    {
-        $this->groupAdmin = $group;
-        return $this;
     }
 
     /**
@@ -213,12 +187,12 @@ class JangoMail
 
     public function addEmailLog(EmailInterface $email, $result)
     {
-        if ($this->getConfig('enable_log') == TRUE) {
+        if ($this->getConfig('enable_log') == true) {
             $log = new \Netpeople\JangoMailBundle\Entity\EmailLogs();
             $log->setEmail($email)->setResult($result)
                     ->setError($this->getError())
                     ->setDatetime(new \DateTime('now'));
-            $eManager = $this->getEntityManager(get_class($log));
+            $eManager = $this->getManager();
             $eManager->persist($log);
             $eManager->flush();
         }
@@ -227,7 +201,7 @@ class JangoMail
 
     public function getOptionsString(EmailInterface $email, array $options = array())
     {
-        $options = ((array)$email->getOptions()) + $options;
+        $options = ((array) $email->getOptions()) + $options;
         $opts = array();
         foreach ($options as $index => $value) {
             if ($value) {
@@ -235,6 +209,20 @@ class JangoMail
             }
         }
         return join(',', $opts);
+    }
+
+    public function prepare(array $arguments = array())
+    {
+        return array(
+            'Username' => $this->getConfig('username'),
+            'Password' => $this->getConfig('password'),
+                ) + $arguments;
+    }
+
+    public function call($method, array $arguments = array())
+    {
+        return $this->getJangoInstance()
+                ->{$method}($this->prepare($arguments));
     }
 
 }

@@ -22,7 +22,7 @@ class GruposController extends Controller
      */
     public function indexAction()
     {
-        $grupos = $this->get('jango_mail')->getGroupAdmin()->getGroups();
+        $grupos = $this->get('jango_mail.group_admin')->getGroups();
         return array(
             'grupos' => $grupos
         );
@@ -42,14 +42,17 @@ class GruposController extends Controller
         $form->handleRequest($this->getRequest());
 
         if ($form->isValid()) {
-            /* @var $adminGrupos \Netpeople\JangoMailBundle\Groups\GroupAdmin */
-            $adminGrupos = $this->get('jango_mail')->getGroupAdmin();
+            $adminGrupos = $this->get('jango_mail.group_admin');
             if ($grupo = $adminGrupos->addGroup($form->getData())) {
                 $this->get('session')
-                        ->getFlashBag()->add('success', "Se creó Correctamente el Grupo {$grupo->getGroupID()}");
+                        ->getFlashBag()
+                        ->add('success', "Se creó Correctamente el Grupo {$grupo->getGroupID()}");
+                        
                 return $this->redirect($this->generateUrl('JangoMailBundle_Grupos_index'), 201);
             } else {
-                $this->get('session')->getFlashBag()->add('error', $this->get('jango_mail')->getError());
+                $this->get('session')
+                        ->getFlashBag()
+                        ->add('error', $this->get('jango_mail')->getError());
             }
         }
 
@@ -64,8 +67,7 @@ class GruposController extends Controller
      */
     public function editarAction($grupoID)
     {
-        /* @var $adminGrupos \Netpeople\JangoMailBundle\Groups\GroupAdmin */
-        $adminGrupos = $this->get('jango_mail')->getGroupAdmin();
+        $adminGrupos = $this->get('jango_mail.group_admin');
 
         $grupo = $adminGrupos->getGroupByGroupID($grupoID);
 
@@ -95,7 +97,7 @@ class GruposController extends Controller
     public function miembrosAction($grupoID)
     {
         /* @var $adminGrupos \Netpeople\JangoMailBundle\Groups\GroupAdmin */
-        $adminGrupos = $this->get('jango_mail')->getGroupAdmin();
+        $adminGrupos = $this->get('jango_mail.group_admin');
 
         $grupo = $adminGrupos->getGroupByGroupID($grupoID);
 

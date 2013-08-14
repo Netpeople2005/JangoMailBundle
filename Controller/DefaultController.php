@@ -18,6 +18,14 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
+        
+        $email = new \Netpeople\JangoMailBundle\Emails\Email('288232970');
+        
+        $result = $this->get('jango_mail.campaign_reporting')
+                ->opens($email);
+        
+        var_dump($result);
+        
         return array();
     }
 

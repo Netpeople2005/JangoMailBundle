@@ -53,10 +53,11 @@ class Email implements EmailInterface
      */
     protected $options = array();
 
-    function __construct()
+    function __construct($emailID = null)
     {
         $this->recipients = new RecipientsCollection();
         $this->groups = new ArrayCollection();
+        $this->setEmailID($emailID);
     }
 
     public function getEmailID()
