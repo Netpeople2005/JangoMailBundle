@@ -177,9 +177,22 @@ class CampaignReporting
     }
 
     /**
+     * Reports_GetBouncesByCampaign_XML2
+     * Retrieves list of bounced addresses for a particular mass e-mail campaign. Returns an XML document.
      * 
      * @param \Netpeople\JangoMailBundle\Emails\EmailInterface $email
-     * @return type
+     * @return array
+     * 
+     * array(
+     *      array(
+     *          'email' => (string),
+     *           'smtp_code' => (string),
+     *           'definitive' => (int),
+     *           'bounce_date_time' => DateTime,
+     *      ),
+     *      ...
+     * )
+     * 
      * @throws JangoMailException
      */
     public function bounces(EmailInterface $email)
@@ -190,12 +203,15 @@ class CampaignReporting
             ));
 
             $xml = $result->Reports_GetBouncesByCampaign_XML2Result->any;
-            var_dump(simplexml_load_string($xml));
+
             $recipients = array();
 
             foreach (simplexml_load_string($xml)->Bounces as $e) {
                 $recipients[] = array(
                     'email' => (string) $e->EmailAddress,
+                    'smtp_code' => (string) $e->SMTPCode,
+                    'definitive' => (string) $e->Definitive,
+                    'bounce_date_time' => new DateTime((string) $e->BounceDateTime),
                 );
             }
 
