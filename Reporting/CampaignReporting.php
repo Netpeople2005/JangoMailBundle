@@ -73,7 +73,6 @@ class CampaignReporting
         }
     }
 
-    
     /**
      * Reports_GetAllClicks_XML
      * 
@@ -219,6 +218,56 @@ class CampaignReporting
         } catch (SoapFault $e) {
             throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+    
+    public function recipients(EmailInterface $email)
+    {
+        try {
+            $result = $this->jango->call('Reports_GetRecipients_XML', array(
+                'JobID' => $email->getEmailID(),
+            ));
+
+            $xml = $result->Reports_GetRecipients_XMLResult->any;
+
+            $recipients = array();
+
+            foreach (simplexml_load_string($xml)->Recipients as $e) {
+                $recipients[] = (string) $e->EmailAddress;
+            }
+
+            return $recipients;
+        } catch (SoapFault $e) {
+            throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * Get de All Info by Email
+     * 
+     * @param \Netpeople\JangoMailBundle\Emails\EmailInterface $email
+     * @param boolean $recipients true if return recipients data
+     * @return array
+     * 
+     * array(
+     *      'report' => (array),
+     *      'opens' => (array),
+     *      'clicks' => (array),
+     *      'bounces' => (array),
+     *      'recipients' => (array),
+     * );
+     * 
+     */
+    public function getAllInfo(EmailInterface $email, $recipients = false)
+    {
+        $result = array();
+
+        $result['report'] = $this->report($email);
+        $result['opens'] = $this->opens($email);
+        $result['clicks'] = $this->clicks($email);
+        $result['bounces'] = $this->bounces($email);
+        $recipients && $result['recipients'] = $this->recipients($email);
+
+        return $result;
     }
 
 }

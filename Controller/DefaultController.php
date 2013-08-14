@@ -23,7 +23,7 @@ class DefaultController extends Controller
             $email = new \Netpeople\JangoMailBundle\Emails\Email('288217996');
         
         $result = $this->get('jango_mail.campaign_reporting')
-                ->bounces($email);
+                ->getAllInfo($email);
         
         var_dump($result);
         
