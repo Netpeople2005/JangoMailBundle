@@ -2,9 +2,10 @@
 
 namespace Netpeople\JangoMailBundle\Form\Type;
 
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilder;
 use Netpeople\JangoMailBundle\Form\Type\RecipientType;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Description of EmailCampaign
@@ -14,7 +15,7 @@ use Netpeople\JangoMailBundle\Form\Type\RecipientType;
 class EmailType extends AbstractType
 {
 
-    public function buildForm(FormBuilder $form, array $opciones)
+    public function buildForm(FormBuilderInterface $form, array $opciones)
     {
         $form->add('subject', 'text', array(
                     'label' => 'Asunto del Correo'
@@ -34,12 +35,14 @@ class EmailType extends AbstractType
     {
         return 'Email2';
     }
-
-    public function getDefaultOptions(array $opciones)
+    
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        return array(
-            'data_class' => 'Netpeople\JangoMailBundle\Emails\Email'
-        );
+        parent::setDefaultOptions($resolver);
+        
+        $resolver->setDefaults(array(
+            'data_class' => 'Netpeople\\JangoMailBundle\\Emails\\Email'
+        ));
     }
 
 }

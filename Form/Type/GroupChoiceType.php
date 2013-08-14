@@ -2,19 +2,18 @@
 
 namespace Netpeople\JangoMailBundle\Form\Type;
 
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilder;
-use Netpeople\JangoMailBundle\Groups\GroupAdmin;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\FormBuilderInterface;
 
 /**
  * Description of GroupType
  *
  * @author manuel
  */
-class GroupType extends \Symfony\Component\Form\Extension\Core\Type\ChoiceType
+class GroupType extends ChoiceType
 {
 
-    public function buildForm(FormBuilder $form, array $opciones)
+    public function buildForm(FormBuilderInterface $form, array $opciones)
     {
 
         $form->add('name', 'text', array(

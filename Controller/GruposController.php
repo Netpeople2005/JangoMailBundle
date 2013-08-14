@@ -39,16 +39,17 @@ class GruposController extends Controller
         $newgroup->addRecipient(new Recipient());
         $form = $this->createForm(new GroupType(), $newgroup);
 
-        if ($this->getRequest()->getMethod() === 'POST' &&
-                $form->bindRequest($this->getRequest())->isValid()) {
+        $form->handleRequest($this->getRequest());
+
+        if ($form->isValid()) {
             /* @var $adminGrupos \Netpeople\JangoMailBundle\Groups\GroupAdmin */
             $adminGrupos = $this->get('jango_mail')->getGroupAdmin();
             if ($grupo = $adminGrupos->addGroup($form->getData())) {
                 $this->get('session')
-                        ->setFlash('success', "Se creó Correctamente el Grupo {$grupo->getGroupID()}");
+                        ->getFlashBag()->add('success', "Se creó Correctamente el Grupo {$grupo->getGroupID()}");
                 return $this->redirect($this->generateUrl('JangoMailBundle_Grupos_index'), 201);
             } else {
-                $this->get('session')->setFlash('error', $this->get('jango_mail')->getError());
+                $this->get('session')->getFlashBag()->add('error', $this->get('jango_mail')->getError());
             }
         }
 
@@ -74,10 +75,10 @@ class GruposController extends Controller
 //                $form->bindRequest($this->getRequest())->isValid()) {
 //            $nuevoGrupo = $form->getData();
 //            if ($ID = $adminGrupos->editGroup($grupo, $nuevoGrupo->getName())) {
-//                $this->get('session')->setFlash('success', "Se Editó Correctamente el Grupo $grupoID");
+//                $this->get('session')->getFlashBag()->add('success', "Se Editó Correctamente el Grupo $grupoID");
 //                return $this->redirect($this->generateUrl('JangoMailBundle_Grupos_index'), 200);
 //            } else {
-//                $this->get('session')->setFlash('error', $this->get('jango_mail')->getError());
+//                $this->get('session')->getFlashBag()->add('error', $this->get('jango_mail')->getError());
 //            }
 //        }
 
@@ -95,9 +96,9 @@ class GruposController extends Controller
     {
         /* @var $adminGrupos \Netpeople\JangoMailBundle\Groups\GroupAdmin */
         $adminGrupos = $this->get('jango_mail')->getGroupAdmin();
-        
+
         $grupo = $adminGrupos->getGroupByGroupID($grupoID);
-        
+
         $miembros = $adminGrupos->getMembers($grupo);
 
         return array(

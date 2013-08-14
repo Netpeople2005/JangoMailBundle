@@ -3,8 +3,8 @@
 namespace Netpeople\JangoMailBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilder;
-use Netpeople\JangoMailBundle\Groups\GroupAdmin;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Description of GroupType
@@ -14,7 +14,7 @@ use Netpeople\JangoMailBundle\Groups\GroupAdmin;
 class RecipientType extends AbstractType
 {
 
-    public function buildForm(FormBuilder $form, array $opciones)
+    public function buildForm(FormBuilderInterface $form, array $opciones)
     {
 
         $form->add('email', 'email', array(
@@ -32,11 +32,13 @@ class RecipientType extends AbstractType
         return 'recipient';
     }
 
-    public function getDefaultOptions(array $opciones)
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        return array(
-            'data_class' => 'Netpeople\JangoMailBundle\Recipients\Recipient'
-        );
+        parent::setDefaultOptions($resolver);
+        
+        $resolver->setDefaults(array(
+            'data_class' => 'Netpeople\\JangoMailBundle\\Recipients\\Recipient'
+        ));
     }
 
 }

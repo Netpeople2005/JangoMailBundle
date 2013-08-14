@@ -3,8 +3,7 @@
 namespace Netpeople\JangoMailBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilder;
-use Netpeople\JangoMailBundle\Groups\GroupAdmin;
+use Symfony\Component\Form\FormBuilderInterface;
 
 /**
  * Description of GroupType
@@ -13,7 +12,7 @@ use Netpeople\JangoMailBundle\Groups\GroupAdmin;
  */
 class GroupType extends AbstractType {
 
-    public function buildForm(FormBuilder $form, array $opciones) {
+    public function buildForm(FormBuilderInterface $form, array $opciones) {
 
         $form->add('name', 'text', array(
                     'label' => 'Nombre del Grupo',

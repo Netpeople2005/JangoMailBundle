@@ -18,7 +18,7 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-         return array();
+        return array();
     }
 
     /**
@@ -60,14 +60,14 @@ class DefaultController extends Controller
 
         $form = $this->createForm(new EmailType(), $email);
 
-        if ($this->getRequest()->getMethod() === 'POST') {
-            if ($form->bindRequest($this->getRequest())->isValid()) {
-                $email = $form->getData();
-                if ($email = $this->get('jango_mail')->send($email)) {
-                    $this->get('session')->setFlash('success', "Se envió el Correo Perfectamente (ID: {$email->getEmailID()})");
-                } else {
-                    $this->get('session')->setFlash('error', $this->get('jango_mail')->getError());
-                }
+        $form->handleRequest($this->getRequest());
+
+        if ($form->isValid()) {
+            $email = $form->getData();
+            if ($email = $this->get('jango_mail')->send($email)) {
+                $this->get('session')->getFlashBag()->add('success', "Se envió el Correo Perfectamente (ID: {$email->getEmailID()})");
+            } else {
+                $this->get('session')->getFlashBag()->add('error', $this->get('jango_mail')->getError());
             }
         }
 

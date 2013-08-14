@@ -1,3 +1,8 @@
-{% for tipo, mensaje in app.session.getFlashes() %}
-    <div class="alert alert-{{ tipo }}">{{ mensaje }}</div>
+{% for key, messages in app.session.flashBag() %}
+{% for msj in messages %}
+    <div class="alert alert-{{ key }}">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ msj|trans({}) }}
+    </div>
+{% endfor %}
 {% endfor %}
