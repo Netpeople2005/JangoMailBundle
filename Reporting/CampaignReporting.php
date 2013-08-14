@@ -33,7 +33,7 @@ class CampaignReporting
      * 
      * Gets the reporting statistics on a particular mass e-mail. Returns an array of integers.
      *  
-     * @param \Netpeople\JangoMailBundle\Emails\EmailInterface $email
+     * @param EmailInterface $email
      * @return array
      * 
      *    array(
@@ -78,7 +78,7 @@ class CampaignReporting
      * 
      * Retrieves list of recipients that have clicked any link in a mass e-mail campaign. Returns an XML document.
      * 
-     * @param \Netpeople\JangoMailBundle\Emails\EmailInterface $email
+     * @param EmailInterface $email
      * @param string $orderBy
      * @param string $sortOrder
      * @return array
@@ -129,7 +129,7 @@ class CampaignReporting
      * 
      * Retrieves list of recipients that have opened a mass e-mail campaign. Returns an XML document.
      * 
-     * @param \Netpeople\JangoMailBundle\Emails\EmailInterface $email
+     * @param EmailInterface $email
      * @param string $orderBy
      * @param string $sortOrder
      * @param string $whitchTime
@@ -179,7 +179,7 @@ class CampaignReporting
      * Reports_GetBouncesByCampaign_XML2
      * Retrieves list of bounced addresses for a particular mass e-mail campaign. Returns an XML document.
      * 
-     * @param \Netpeople\JangoMailBundle\Emails\EmailInterface $email
+     * @param EmailInterface $email
      * @return array
      * 
      * array(
@@ -219,7 +219,17 @@ class CampaignReporting
             throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
         }
     }
-    
+
+    /**
+     * Reports_GetRecipients_XML
+     * 
+     * Retrieves list of recipients for a particular mass e-mail campaign. Returns an XML document.
+     * 
+     * 
+     * @param EmailInterface $email
+     * @return array(recipients string)
+     * @throws JangoMailException
+     */
     public function recipients(EmailInterface $email)
     {
         try {
@@ -244,7 +254,7 @@ class CampaignReporting
     /**
      * Get de All Info by Email
      * 
-     * @param \Netpeople\JangoMailBundle\Emails\EmailInterface $email
+     * @param EmailInterface $email
      * @param boolean $recipients true if return recipients data
      * @return array
      * 
@@ -268,6 +278,58 @@ class CampaignReporting
         $recipients && $result['recipients'] = $this->recipients($email);
 
         return $result;
+    }
+
+    /**
+     * GetMassEmailReport_Multiple_String
+     * 
+     * Gets the reporting statistics for a set of mass emails based on date range. Returns a list of JobID, Message Count, Views, Clicks, Unsubscribes, Bounces, Forwards, Replies and Page Views. Returns a String.
+     * 
+     * @param DateTime $begin
+     * @param DateTime $end
+     * @return type
+     * @throws JangoMailException
+     */
+    public function emailsInfo(DateTime $begin, DateTime $end = null)
+    {
+        if (!$end) {
+            $end = new DateTime('now');
+        }
+        try {
+            $result = $this->jango->call('GetMassEmailReport_Multiple_String', array(
+                'BeginDate' => $begin->format(\DateTime::W3C),
+                'EndDate' => $end->format(\DateTime::W3C),
+                'RowDelimiter' => PHP_EOL,
+                'ColDelimiter' => '|',
+                'TextQualifier' => '',
+            ));
+
+            $result = $result->GetMassEmailReport_Multiple_StringResult;
+
+            $emails = array();
+            foreach (str_getcsv($result, PHP_EOL) as $line) {
+                $data = str_getcsv($result, '|');
+                $emails[$data[0]] = array(
+                    'email_id' => $data[0],
+                    'recipients' => $data[0],
+                    'opened' => $data[1],
+                    'clicked' => $data[2],
+                    'unsubscribes' => $data[3],
+                    'bounces' => $data[4],
+                    'forwards' => $data[5],
+                    'replies' => $data[6],
+                    'page_views' => $data[7],
+                );
+            }
+
+            foreach (simplexml_load_string($xml)->Recipients as $e) {
+                $recipients[] = (string) $e->EmailAddress;
+            }
+
+            return $recipients;
+        } catch (SoapFault $e) {
+            throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
 }

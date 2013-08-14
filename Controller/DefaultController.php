@@ -21,9 +21,9 @@ class DefaultController extends Controller
         
         $email = new \Netpeople\JangoMailBundle\Emails\Email('288232970');
             $email = new \Netpeople\JangoMailBundle\Emails\Email('288217996');
-        
+            
         $result = $this->get('jango_mail.campaign_reporting')
-                ->getAllInfo($email);
+                ->emailsInfo(new \DateTime('yesterday'));
         
         var_dump($result);
         
