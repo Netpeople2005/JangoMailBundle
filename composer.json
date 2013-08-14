@@ -2,7 +2,8 @@
     "name": "optime/jangomail",
     "description": "Bundle para envio de correos por Jango",
     "require": {
-        "php": ">=5.3.3"
+        "php": ">=5.3.3",
+        "symfony/symfony": ">=2.3"
     },
     "scripts": {
         "post-install-cmd": [
