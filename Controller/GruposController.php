@@ -22,7 +22,7 @@ class GruposController extends Controller
      */
     public function indexAction()
     {
-        $grupos = $this->get('jango_mail.group_admin')->getGroups();
+        $grupos = $this->get('jango_mail.group_admin')->getAll();
         return array(
             'grupos' => $grupos
         );
@@ -43,7 +43,7 @@ class GruposController extends Controller
 
         if ($form->isValid()) {
             $adminGrupos = $this->get('jango_mail.group_admin');
-            if ($grupo = $adminGrupos->addGroup($form->getData())) {
+            if ($grupo = $adminGrupos->add($form->getData())) {
                 $this->get('session')
                         ->getFlashBag()
                         ->add('success', "Se creó Correctamente el Grupo {$grupo->getGroupID()}");
@@ -69,7 +69,7 @@ class GruposController extends Controller
     {
         $adminGrupos = $this->get('jango_mail.group_admin');
 
-        $grupo = $adminGrupos->getGroupByGroupID($grupoID);
+        $grupo = $adminGrupos->getById($grupoID);
 
         $form = $this->createForm(new GroupType(), clone $grupo);
 
@@ -99,7 +99,7 @@ class GruposController extends Controller
         /* @var $adminGrupos \Netpeople\JangoMailBundle\Groups\GroupAdmin */
         $adminGrupos = $this->get('jango_mail.group_admin');
 
-        $grupo = $adminGrupos->getGroupByGroupID($grupoID);
+        $grupo = $adminGrupos->getById($grupoID);
 
         $miembros = $adminGrupos->getMembers($grupo);
 

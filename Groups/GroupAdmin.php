@@ -8,14 +8,13 @@ use Netpeople\JangoMailBundle\Groups\Group;
 use Netpeople\JangoMailBundle\JangoMail;
 use Netpeople\JangoMailBundle\Recipients\Recipient;
 use SoapFault;
-use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceListInterface;
 
 /**
  * Description of GroupManagement
  *
  * @author manuel
  */
-class GroupAdmin implements ChoiceListInterface
+class GroupAdmin
 {
 
     /**
@@ -35,7 +34,7 @@ class GroupAdmin implements ChoiceListInterface
      * @param Group $group
      * @return boolean|Group el grupo creado ó false si hay error
      */
-    public function addGroup(Group $group)
+    public function add(Group $group)
     {
         try {
             $response = $this->jangoMail->call('AddGroup', array(
@@ -43,7 +42,13 @@ class GroupAdmin implements ChoiceListInterface
             ));
             $response = preg_split('/\n/m', $response->AddGroupResult);
             if (0 == $response[0]) {
-                return $group->setGroupID($response[2]);
+                $group->setGroupID($response[2]);
+
+                if ($group->getRecipients()->count()) {
+                    $this->addMembers($group);
+                }
+
+                return $group;
             } else {
                 $this->jangoMail->setError("No se pudo crear el Grupo");
             }
@@ -63,7 +68,7 @@ class GroupAdmin implements ChoiceListInterface
      * @param type $newName
      * @return boolean 
      */
-    public function editGroup(Group $group, $newName)
+    public function edit(Group $group, $newName)
     {
         try {
             $response = $this->jangoMail->call('Groups_Rename', array(
@@ -81,14 +86,29 @@ class GroupAdmin implements ChoiceListInterface
     }
 
     /**
-     * Obtiene un grupo a travez del ID del mismo.
+     * Obtiene un grupo a traves del ID del mismo.
      * @param string $groupID
      * @return Group|null el grupo encontrado ó nulo si no existe.
      */
-    public function getGroupByGroupID($groupID)
+    public function getById($groupID)
     {
-        foreach ($this->getGroups() as $group) {
+        foreach ($this->getAll() as $group) {
             if ($groupID == $group->getGroupID()) {
+                return $group;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Obtiene un grupo a traves del nombre del mismo.
+     * @param string $name
+     * @return Group|null el grupo encontrado ó nulo si no existe.
+     */
+    public function getByName($name)
+    {
+        foreach ($this->getAll() as $group) {
+            if ($name == $group->getName()) {
                 return $group;
             }
         }
@@ -130,14 +150,13 @@ class GroupAdmin implements ChoiceListInterface
                 $group->addRecipient($e); // insertamos los miembros que estan en jango al objeto.
             }
             if ($result) {
-                return $group;
+                return true;
             } else {
-                $this->jangoMail->setError("No se Pudieron Guardar todos los Destinatarios");
+                throw new JangoMailException("No se Pudieron Guardar todos los Destinatarios");
                 return false;
             }
         } else {
-            $this->jangoMail->setError("No se pudo obtener la Información del Grupo en Jango");
-            return false;
+            throw new JangoMailException("No se pudo obtener la Información del Grupo en Jango");
         }
     }
 
@@ -163,7 +182,7 @@ class GroupAdmin implements ChoiceListInterface
      *
      * @return boolean 
      */
-    public function getGroups()
+    public function getAll()
     {
         try {
             $response = $this->jangoMail->call('Groups_GetList_XML');
@@ -189,8 +208,7 @@ class GroupAdmin implements ChoiceListInterface
     public function getMembers(Group $group)
     {
         try {
-            $response = $this->jangoMail
-                    ->call('Groups_GetMembers_XML', array(
+            $response = $this->jangoMail->call('Groups_GetMembers_XML', array(
                 'GroupName' => $group->getName()
             ));
             $xml = $response->Groups_GetMembers_XMLResult->any;
@@ -206,55 +224,21 @@ class GroupAdmin implements ChoiceListInterface
     }
 
     /**
-     * Metodo Usado para devolver un arreglo con los grupos disponibles en
-     * JangoMail.
-     * 
-     * @return array 
+     * Crea y agrega miembros a un grupo si este no existe.
+     * si existe solo agrega miembros nuevos.
+     * @param \Netpeople\JangoMailBundle\Groups\Group $group
+     * @return \Netpeople\JangoMailBundle\Groups\Group
      */
-    public function getChoices()
+    public function addIfNotExist(Group $group)
     {
-        $choices = array();
-//        foreach ($this->getGroups() as $group) {
-//            $choices[$group->getName()] = $group->getName();
-//        }
-        $choices['hola'] = 'hola';
-        $choices['chao'] = 'chao';
-        return $choices;
-    }
+        if ($this->getById($group->getGroupID())) {
+            //si existe solo agregamos los miembros que no existan
+            $this->addMembers($group);
+        } else {
+            $this->add($group);
+        }
 
-    public function getChoicesForValues(array $values)
-    {
-        
-    }
-
-    public function getIndicesForChoices(array $choices)
-    {
-        
-    }
-
-    public function getIndicesForValues(array $values)
-    {
-        
-    }
-
-    public function getPreferredViews()
-    {
-        
-    }
-
-    public function getRemainingViews()
-    {
-        
-    }
-
-    public function getValues()
-    {
-        
-    }
-
-    public function getValuesForChoices(array $choices)
-    {
-        
+        return $group;
     }
 
 }
