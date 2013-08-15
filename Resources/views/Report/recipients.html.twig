@@ -1,0 +1,11 @@
+{% extends "JangoMailBundle::modal.html.twig" %}
+
+{% block header 'Destinatarios del Correo' %}
+
+{% block body %}
+<ul>
+    {% for r in recipients %}
+        <li>{{ r }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

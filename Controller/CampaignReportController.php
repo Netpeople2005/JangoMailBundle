@@ -3,6 +3,7 @@
 namespace Netpeople\JangoMailBundle\Controller;
 
 use DateTime;
+use Netpeople\JangoMailBundle\Emails\Email;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -11,7 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
  *
  * @author maguirre
  */
-class ReportController extends Controller
+class CampaignReportController extends Controller
 {
 
     /**
@@ -28,6 +29,26 @@ class ReportController extends Controller
                     'days' => $start->diff($end)->d,
                     'start' => $start,
                     'end' => $end,
+        ));
+    }
+
+    public function recipientsAction($id)
+    {
+        $recipients = $this->get('jango_mail.campaign_reporting')
+                ->recipients(new Email($id));
+
+        return $this->render('JangoMailBundle:Report:recipients.html.twig', array(
+                    'recipients' => $recipients,
+        ));
+    }
+
+    public function opensAction($id)
+    {
+        $recipients = $this->get('jango_mail.campaign_reporting')
+                ->opens(new Email($id));
+
+        return $this->render('JangoMailBundle:Report:opens.html.twig', array(
+                    'recipients' => $recipients,
         ));
     }
 

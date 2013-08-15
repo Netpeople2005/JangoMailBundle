@@ -1,7 +1,15 @@
-<div class="modal hide" id="mi_modal">
-    <div class="modal-header">Detalles del Correo</div>
-    <div class="modal-body"></div>
+<div class="modal fade" id="MyModal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>{% block header '' %}</h3>
+    </div>
+    <div class="modal-body">{% block body '' %}</div>
     <div class="modal-footer">
-        <a href="#">Cerrar</a>
+        {% block footer %}
+            <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+        {% endblock %}
     </div>
 </div>
+<script>
+    $("#MyModal").modal();
+</script>

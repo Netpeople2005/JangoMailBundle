@@ -18,6 +18,6 @@ JangoMailBundle_Grupos_index:
     resource: "@JangoMailBundle/Resources/config/rutas/grupos.yml"
     prefix:  /grupos
 
-_JangoMailBundle_Reportes:
-    resource: "rutas/reportes.yml"
-    prefix:  /reportes
+_JangoMailBundle_campaign_report:
+    resource: "rutas/campaign_report.yml"
+    prefix:  /campaigns

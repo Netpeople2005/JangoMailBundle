@@ -1,6 +1,0 @@
-jango_reportes:
-    pattern:  /{start}/{end}
-    defaults: 
-        _controller: JangoMailBundle:Report:list
-        start: null
-        end: now

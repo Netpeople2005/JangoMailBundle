@@ -15,7 +15,7 @@
         <input type="submit" value="Filtrar" class="btn btn-primary" />
     </form>
 </p>
-<table class="table table-bordered table-striped">
+<table class="table table-bordered table-striped campaign_report">
     <thead>
         <tr>
             <th>ID</th>
@@ -33,8 +33,16 @@
         {% for email in emails %}
             <tr>
                 <td>{{ email.email_id }}</td>
-                <td>{{ email.recipients }}</td>
-                <td>{{ email.opened }}</td>
+                <td>
+                    <a href="{{ path('jango_campaign_recipients', {id: email.email_id}) }}" >
+                        {{ email.recipients }}
+                    </a>
+                </td>
+                <td>
+                    <a href="{{ path('jango_campaign_opens', {id: email.email_id}) }}" >
+                        {{ email.opened }}
+                    </a>
+                </td>
                 <td>{{ email.clicked }}</td>
                 <td>{{ email.unsubscribes }}</td>
                 <td>{{ email.bounces }}</td>
@@ -53,7 +61,7 @@
     <li class="previous">
         {% set backStart = start|date_modify("-#{days}days")|date('Y-m-d') %}
         {% set backEnd = end|date_modify("-#{days}days")|date('Y-m-d') %}
-        <a href="{{ path('jango_reportes', {start: backStart, end: backEnd}) }}"
+        <a href="{{ path('jango_campaign_reportes', {start: backStart, end: backEnd}) }}"
             title="Desde el {{ backStart }} Hasta el {{ backEnd }}">
             &larr; {{ backStart }} - {{ backEnd }}
         </a>
@@ -62,14 +70,13 @@
         {% if end|date_modify("#{days}days") <= date('now') %}
             {% set nextStart = start|date_modify("#{days}days")|date('Y-m-d') %}
             {% set nextEnd = end|date_modify("#{days}days")|date('Y-m-d') %}
-            <a href="{{ path('jango_reportes', {start: nextStart, end: nextEnd}) }}"
+            <a href="{{ path('jango_campaign_reportes', {start: nextStart, end: nextEnd}) }}"
                title="Desde el {{ nextStart }} Hasta el {{ nextEnd }}">
                 {{ nextStart }} - {{ nextEnd }} &rarr;
             </a>
         {% endif %}
     </li>
 </ul>
-
 {% endblock %}
 
 {% block javascripts %}
@@ -100,7 +107,12 @@
     
     $("#report_filter").on('submit', function(event){
         event.preventDefault();
-        window.location = '{{ path('jango_reportes') }}/' + $('#input_start').val() + '/' + $('#input_end').val();        
+        window.location = '{{ path('jango_campaign_reportes') }}/' + $('#input_start').val() + '/' + $('#input_end').val();        
+    });
+    
+    $(".campaign_report a").on('click', function(event){
+        event.preventDefault();
+        $("#ajax").load(this.href);
     });
 </script>
 {% endblock %}

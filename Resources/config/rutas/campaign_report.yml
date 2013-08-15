@@ -1,0 +1,19 @@
+jango_campaign_reportes:
+    pattern:  /{start}/{end}
+    defaults: 
+        _controller: JangoMailBundle:CampaignReport:list
+        start: null
+        end: now
+    requirements:
+        start: (\d+)-(\d+)-(\d+)
+        end: (\d+)-(\d+)-(\d+)
+        
+jango_campaign_recipients:
+    pattern:  /recipients/{id}
+    defaults: 
+        _controller: JangoMailBundle:CampaignReport:recipients
+        
+jango_campaign_opens:
+    pattern:  /opens/{id}
+    defaults: 
+        _controller: JangoMailBundle:CampaignReport:opens

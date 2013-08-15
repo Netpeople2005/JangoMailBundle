@@ -1,0 +1,7 @@
+{% extends "JangoMailBundle::modal.html.twig" %}
+
+{% block header 'Destinatarios que Han Abierto el Mensaje' %}
+
+{% block body %}
+{{ dump(recipients) }}
+{% endblock %}
