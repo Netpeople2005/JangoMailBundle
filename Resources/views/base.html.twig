@@ -5,6 +5,7 @@
         <title>{% block title %} ADMINISTRACIÓN JANGOMAIL {% endblock %}</title>
         {% block stylesheets  %}
         <link type="text/css" rel="stylesheet" href="{{ asset('bundles/jangomail/css/bootstrap.min.css') }}" />
+        <link type="text/css" rel="stylesheet" href="{{ asset('bundles/jangomail/css/datepicker.css') }}" />
         <link type="text/css" rel="stylesheet" href="{{ asset('bundles/jangomail/css/bootstrap-responsive.min.css') }}" />
         {% endblock %}
         <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
@@ -19,6 +20,7 @@
                                 <li><a href="{{ path("JangoMailBundle_envio") }}">Prueba</a></li>
                                 <li><a href="{{ path("JangoMailBundle_logs") }}">Registros</a></li>
                                 <li><a href="{{ path("JangoMailBundle_Grupos_index") }}">Grupos</a></li>
+                                <li><a href="{{ path('jango_reportes', {start: 'yesterday'|date('Y-m-d')}) }}">Reportes de Campaña</a></li>
                             </ul>
                         </div>
                     </div>
@@ -30,6 +32,7 @@
         {% block javascripts %}
             <script type="text/javascript" src="{{ asset('bundles/jangomail/js/jquery-1.7.2.min.js') }}"></script>
             <script type="text/javascript" src="{{ asset('bundles/jangomail/js/bootstrap.min.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('bundles/jangomail/js/bootstrap-datepicker.js') }}"></script>
         {% endblock %}
             <div id="ajax"></div>
     </body>

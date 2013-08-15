@@ -2,12 +2,15 @@
 
 namespace Netpeople\JangoMailBundle;
 
-use Netpeople\JangoMailBundle\Groups\GroupAdmin;
-use Netpeople\JangoMailBundle\CampaignSending;
-use Netpeople\JangoMailBundle\TransactionalSending;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\EntityManager;
+use Netpeople\JangoMailBundle\CampaignSending;
 use Netpeople\JangoMailBundle\Emails\EmailInterface;
+use Netpeople\JangoMailBundle\Entity\EmailLogs;
 use Netpeople\JangoMailBundle\Exception\JangoMailException;
+use Netpeople\JangoMailBundle\TransactionalSending;
+use SoapClient;
 
 /**
  * Description of JangoMail
@@ -37,7 +40,7 @@ class JangoMail
 
     /**
      *
-     * @var \SoapClient
+     * @var SoapClient
      */
     protected $jangoClient;
 
@@ -60,12 +63,12 @@ class JangoMail
 
     /**
      *
-     * @return \SoapClient 
+     * @return SoapClient 
      */
     public function getJangoInstance()
     {
-        if (!($this->jangoClient instanceof \SoapClient)) {
-            $this->jangoClient = new \SoapClient($this->config['url_jango']);
+        if (!($this->jangoClient instanceof SoapClient)) {
+            $this->jangoClient = new SoapClient($this->config['url_jango']);
             //var_dump($this->jangoClient,$this->config['url_jango']);die;
         }
         return $this->jangoClient;
@@ -73,7 +76,7 @@ class JangoMail
 
     /**
      *
-     * @return \Doctrine\ORM\EntityManager 
+     * @return EntityManager 
      */
     public function getManager()
     {
@@ -188,10 +191,10 @@ class JangoMail
     public function addEmailLog(EmailInterface $email, $result)
     {
         if ($this->getConfig('enable_log') == true) {
-            $log = new \Netpeople\JangoMailBundle\Entity\EmailLogs();
+            $log = new EmailLogs();
             $log->setEmail($email)->setResult($result)
                     ->setError($this->getError())
-                    ->setDatetime(new \DateTime('now'));
+                    ->setDatetime(new DateTime('now'));
             $eManager = $this->getManager();
             $eManager->persist($log);
             $eManager->flush();

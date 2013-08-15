@@ -287,7 +287,22 @@ class CampaignReporting
      * 
      * @param DateTime $begin
      * @param DateTime $end
-     * @return type
+     * @return array
+     * 
+     * array(
+     *      array(
+     *          'email_id' => (int),
+     *          'recipients' => (int),
+     *          'opened' => (int),
+     *          'clicked' => (int),
+     *          'unsubscribes' => (int),
+     *          'bounces' => (int),
+     *          'forwards' => (int),
+     *          'replies' => (int),
+     *          'page_views' => (int),
+     *      )
+     * );
+     * 
      * @throws JangoMailException
      */
     public function emailsInfo(DateTime $begin, DateTime $end = null)
@@ -299,34 +314,33 @@ class CampaignReporting
             $result = $this->jango->call('GetMassEmailReport_Multiple_String', array(
                 'BeginDate' => $begin->format(\DateTime::W3C),
                 'EndDate' => $end->format(\DateTime::W3C),
-                'RowDelimiter' => PHP_EOL,
+                'RowDelimiter' => '---',
                 'ColDelimiter' => '|',
-                'TextQualifier' => '',
+                'TextQualifier' => null,
             ));
 
             $result = $result->GetMassEmailReport_Multiple_StringResult;
 
             $emails = array();
-            foreach (str_getcsv($result, PHP_EOL) as $line) {
-                $data = str_getcsv($result, '|');
+            foreach (str_getcsv($result, '---') as $line) {
+                if (empty($line)) {
+                    continue;
+                }
+                $data = str_getcsv($line, '|');
                 $emails[$data[0]] = array(
                     'email_id' => $data[0],
-                    'recipients' => $data[0],
-                    'opened' => $data[1],
-                    'clicked' => $data[2],
-                    'unsubscribes' => $data[3],
-                    'bounces' => $data[4],
-                    'forwards' => $data[5],
-                    'replies' => $data[6],
-                    'page_views' => $data[7],
+                    'recipients' => $data[1],
+                    'opened' => $data[2],
+                    'clicked' => $data[3],
+                    'unsubscribes' => $data[4],
+                    'bounces' => $data[5],
+                    'forwards' => $data[6],
+                    'replies' => $data[7],
+                    'page_views' => $data[8],
                 );
             }
 
-            foreach (simplexml_load_string($xml)->Recipients as $e) {
-                $recipients[] = (string) $e->EmailAddress;
-            }
-
-            return $recipients;
+            return $emails;
         } catch (SoapFault $e) {
             throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
         }

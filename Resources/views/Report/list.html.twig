@@ -1,0 +1,106 @@
+{% extends "JangoMailBundle::base.html.twig" %}
+
+
+{% block cuerpo %}
+<h1>Reportes</h1>
+{% include "JangoMailBundle::flashes.html.twig" %}
+<p>
+    <form id="report_filter" class="form-inline">
+        <label>Desde: 
+            <input id="input_start" type="text" value="{{ start|date('Y-m-d') }}" />
+        </label>
+        <label>Hasta: 
+            <input id="input_end" type="text" value="{{ end|date('Y-m-d') }}" />
+        </label>
+        <input type="submit" value="Filtrar" class="btn btn-primary" />
+    </form>
+</p>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Recipients</th>
+            <th>Opened</th>
+            <th>Clicked</th>
+            <th>Unsubscribes</th>
+            <th>Bounces</th>
+            <th>Forwards</th>
+            <th>Replies</th>
+            <th>Page Views</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for email in emails %}
+            <tr>
+                <td>{{ email.email_id }}</td>
+                <td>{{ email.recipients }}</td>
+                <td>{{ email.opened }}</td>
+                <td>{{ email.clicked }}</td>
+                <td>{{ email.unsubscribes }}</td>
+                <td>{{ email.bounces }}</td>
+                <td>{{ email.forwards }}</td>
+                <td>{{ email.replies }}</td>
+                <td>{{ email.page_views }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="100">No hay Reportes</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<ul class="pager">
+    <li class="previous">
+        {% set backStart = start|date_modify("-#{days}days")|date('Y-m-d') %}
+        {% set backEnd = end|date_modify("-#{days}days")|date('Y-m-d') %}
+        <a href="{{ path('jango_reportes', {start: backStart, end: backEnd}) }}"
+            title="Desde el {{ backStart }} Hasta el {{ backEnd }}">
+            &larr; {{ backStart }} - {{ backEnd }}
+        </a>
+    </li>
+    <li class="next">
+        {% if end|date_modify("#{days}days") <= date('now') %}
+            {% set nextStart = start|date_modify("#{days}days")|date('Y-m-d') %}
+            {% set nextEnd = end|date_modify("#{days}days")|date('Y-m-d') %}
+            <a href="{{ path('jango_reportes', {start: nextStart, end: nextEnd}) }}"
+               title="Desde el {{ nextStart }} Hasta el {{ nextEnd }}">
+                {{ nextStart }} - {{ nextEnd }} &rarr;
+            </a>
+        {% endif %}
+    </li>
+</ul>
+
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+    var nowTemp = new Date();    
+    var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);    
+    var options = {
+       format: 'yyyy-mm-dd',
+       onRender: function(date) {//no puede ser mayor a hoy, no tiene sentido
+            return date.valueOf() > now.valueOf() ? 'disabled' : '';
+        }
+    };
+    
+    var start = $('#input_start').datepicker(options).on('changeDate', function(ev) {
+        if (ev.date.valueOf() > end.date.valueOf()) {
+            var newDate = new Date(ev.date)
+            newDate.setDate(newDate.getDate() + 1);
+            end.setValue(newDate);
+        }
+        start.hide();
+        $('#input_end').focus();
+    }).data('datepicker');
+    
+    var end = $('#input_end').datepicker(options).on('changeDate', function(ev) {
+        end.hide();
+    }).data('datepicker');
+    
+    $("#report_filter").on('submit', function(event){
+        event.preventDefault();
+        window.location = '{{ path('jango_reportes') }}/' + $('#input_start').val() + '/' + $('#input_end').val();        
+    });
+</script>
+{% endblock %}
