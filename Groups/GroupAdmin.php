@@ -224,7 +224,7 @@ class GroupAdmin
     }
 
     /**
-     * Crea y agrega miembros a un grupo si este no existe.
+     * Crea y agrega miembros a un grupo buscando por ID si este no existe.
      * si existe solo agrega miembros nuevos.
      * @param \Netpeople\JangoMailBundle\Groups\Group $group
      * @return \Netpeople\JangoMailBundle\Groups\Group
@@ -232,6 +232,24 @@ class GroupAdmin
     public function addIfNotExist(Group $group)
     {
         if ($this->getById($group->getGroupID())) {
+            //si existe solo agregamos los miembros que no existan
+            $this->addMembers($group);
+        } else {
+            $this->add($group);
+        }
+
+        return $group;
+    }
+
+    /**
+     * Crea y agrega miembros a un grupo buscando por el Nombre si este no existe.
+     * si existe solo agrega miembros nuevos.
+     * @param \Netpeople\JangoMailBundle\Groups\Group $group
+     * @return \Netpeople\JangoMailBundle\Groups\Group
+     */
+    public function addIfNameNotExist(Group $group)
+    {
+        if ($this->getByName($group->getGroupID())) {
             //si existe solo agregamos los miembros que no existan
             $this->addMembers($group);
         } else {
