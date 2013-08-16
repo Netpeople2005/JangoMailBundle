@@ -249,7 +249,7 @@ class GroupAdmin
      */
     public function addIfNameNotExist(Group $group)
     {
-        if ($this->getByName($group->getGroupID())) {
+        if ($this->getByName($group->getName())) {
             //si existe solo agregamos los miembros que no existan
             $this->addMembers($group);
         } else {
