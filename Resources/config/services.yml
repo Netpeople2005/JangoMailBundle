@@ -17,7 +17,7 @@ parameters:
 services:
     jango_mail:
         class: %jango_mail.class%
-        arguments: [%jango_mail.config% , "@doctrine" ]
+        arguments: [%jango_mail.config% , "@doctrine", @?logger ]
         calls:
             - [ setCampaign, [ "@jango_mail.campaign_sending" ] ]
             - [ setTransactional, [ "@jango_mail.transactional_sending" ] ]

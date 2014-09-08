@@ -3,8 +3,10 @@
 <div class="page-header">
     <h1>Registros de Correos Emviados</h1>
 </div>
-{% for tipo, mensaje in app.session.getFlashes() %}
+{% for tipo, mensajes in app.session.flashBag %}
+    {% for mensaje in mensajes %}
     <div class="alert alert-{{ tipo }}">{{ mensaje }}</div>
+    {% endfor %}
 {% endfor %}
 <table class="table table-bordered table-striped">
     <thead>

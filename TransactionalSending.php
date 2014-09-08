@@ -37,6 +37,9 @@ class TransactionalSending extends AbstractSending
         if (!($this->email instanceof EmailInterface)) {
             throw new TransactionalException('Debe llamar a setEmail() antes de hacer el Envío');
         }
+
+        $this->email->setOptions($this->prepareOptions());
+
         //si está desabilitado el envio, quitamos los destinatarios
         //y agregamos un test
         if (true === $this->jangoMail->getConfig('disable_delivery')) {
@@ -51,7 +54,6 @@ class TransactionalSending extends AbstractSending
                 //si no hay a quien enviar, no lo enviamos y lo devolvemos.
                 $this->email->setEmailID('- TEST -');
                 //establesco las opciones para el email.
-                $this->email->setOptions($this->prepareOptions());
                 $this->jangoMail->addEmailLog($this->email, 'SUCCESS');
                 return $this->email;
             }
@@ -81,6 +83,8 @@ class TransactionalSending extends AbstractSending
                 $this->jangoMail->setError("No se pudo enviar el Correo (Asunto: {$this->email->getSubject()})");
             }
         } catch (SoapFault $e) {
+            $this->jangoMail->setError($e->getMessage());
+            $this->jangoMail->addEmailLog($this->email, 'ERROR');
             throw new TransactionalException($e->getMessage(), $e->getCode(), $e);
         }
         $this->jangoMail->addEmailLog($this->email, $result ? 'SUCCESS' : 'ERROR');

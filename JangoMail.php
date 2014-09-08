@@ -10,6 +10,7 @@ use Netpeople\JangoMailBundle\Emails\EmailInterface;
 use Netpeople\JangoMailBundle\Entity\EmailLogs;
 use Netpeople\JangoMailBundle\Exception\JangoMailException;
 use Netpeople\JangoMailBundle\TransactionalSending;
+use Psr\Log\LoggerInterface;
 use SoapClient;
 
 /**
@@ -22,19 +23,19 @@ class JangoMail
 
     /**
      *
-     * @var array 
+     * @var array
      */
     protected $config = array();
 
     /**
      *
-     * @var CampaignSending 
+     * @var CampaignSending
      */
     protected $campaignSending;
 
     /**
      *
-     * @var TransactionalSending 
+     * @var TransactionalSending
      */
     protected $transactionalSending;
 
@@ -46,24 +47,30 @@ class JangoMail
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $error;
 
     /**
      *
-     * @var Registry 
+     * @var Registry
      */
     protected $registry;
 
-    public function __construct($config, Registry $registry)
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    public function __construct($config, Registry $registry, LoggerInterface $logger = null)
     {
         $this->setConfig($config)->registry = $registry;
+        $this->logger = $logger;
     }
 
     /**
      *
-     * @return SoapClient 
+     * @return SoapClient
      */
     public function getJangoInstance()
     {
@@ -71,12 +78,13 @@ class JangoMail
             $this->jangoClient = new SoapClient($this->config['url_jango']);
             //var_dump($this->jangoClient,$this->config['url_jango']);die;
         }
+
         return $this->jangoClient;
     }
 
     /**
      *
-     * @return EntityManager 
+     * @return EntityManager
      */
     public function getManager()
     {
@@ -86,30 +94,33 @@ class JangoMail
     /**
      *
      * @param array $config
-     * @return \Netpeople\JangoMailBundle\JangoMail 
+     *
+     * @return \Netpeople\JangoMailBundle\JangoMail
      */
     public function setConfig($config)
     {
         $this->config = $config;
+
         return $this;
     }
 
     /**
      *
-     * @return array 
+     * @return array
      */
     public function getConfig($name = null)
     {
         if ($name) {
             return array_key_exists($name, $this->config) ?
-                    $this->config[$name] : null;
+                $this->config[$name] : null;
         }
+
         return $this->config;
     }
 
     /**
      *
-     * @return CampaignSending 
+     * @return CampaignSending
      */
     public function getCampaign()
     {
@@ -119,17 +130,19 @@ class JangoMail
     /**
      *
      * @param CampaignSending $campaign
-     * @return \Netpeople\JangoMailBundle\JangoMail 
+     *
+     * @return \Netpeople\JangoMailBundle\JangoMail
      */
     public function setCampaign(CampaignSending $campaign)
     {
         $this->campaignSending = $campaign;
+
         return $this;
     }
 
     /**
      *
-     * @return TransactionalSending 
+     * @return TransactionalSending
      */
     public function getTransactional()
     {
@@ -139,13 +152,15 @@ class JangoMail
     public function setTransactional(TransactionalSending $transactional)
     {
         $this->transactionalSending = $transactional;
+
         return $this;
     }
 
     /**
      *
      * @param Emails\EmailInterface $email
-     * @return boolean 
+     *
+     * @return boolean
      */
     public function send(Emails\EmailInterface $email)
     {
@@ -171,17 +186,19 @@ class JangoMail
     /**
      *
      * @param string $error
-     * @return \Netpeople\JangoMailBundle\JangoMail 
+     *
+     * @return \Netpeople\JangoMailBundle\JangoMail
      */
     public function setError($error)
     {
         $this->error = $error;
+
         return $this;
     }
 
     /**
      *
-     * @return string 
+     * @return string
      */
     public function getError()
     {
@@ -193,12 +210,13 @@ class JangoMail
         if ($this->getConfig('enable_log') == true) {
             $log = new EmailLogs();
             $log->setEmail($email)->setResult($result)
-                    ->setError($this->getError())
-                    ->setDatetime(new DateTime('now'));
+                ->setError($this->getError())
+                ->setDatetime(new DateTime('now'));
             $eManager = $this->getManager();
             $eManager->persist($log);
             $eManager->flush();
         }
+
         return $this;
     }
 
@@ -211,6 +229,7 @@ class JangoMail
                 $opts[] = "$index=$value";
             }
         }
+
         return join(',', $opts);
     }
 
@@ -219,13 +238,29 @@ class JangoMail
         return array(
             'Username' => $this->getConfig('username'),
             'Password' => $this->getConfig('password'),
-                ) + $arguments;
+        ) + $arguments;
     }
 
     public function call($method, array $arguments = array())
     {
-        return $this->getJangoInstance()
+        if ($this->logger) {
+            $this->logger->debug(sprintf("[Jango] Calling to %s", $method), $arguments);
+        }
+
+        try {
+            $result = $this->getJangoInstance()
                 ->{$method}($this->prepare($arguments));
+        } catch (\Exception $e) {
+
+            if ($this->logger) {
+                $this->logger->error(sprintf("[Jango ERROR] Calling to %s, with errror: %s"
+                    , $method, $e->getMessage()), $arguments);
+            }
+
+            throw $e;
+        }
+
+        return $result;
     }
 
 }

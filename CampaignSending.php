@@ -47,6 +47,9 @@ class CampaignSending extends AbstractSending
         if (!count($this->email->getGroups())) {
             throw new CampaignException('Debe agregar al menos un grupo antes de hacer el Envío');
         }
+
+        $this->email->setOptions($this->prepareOptions());
+
         try {
             //si está desabilitado el envio, lo enviamos como transactional
             //a un correo test
@@ -65,6 +68,8 @@ class CampaignSending extends AbstractSending
                 $this->jangoMail->setError("No se pudo enviar el Correo (Asunto: {$this->email->getSubject()})");
             }
         } catch (SoapFault $e) {
+            $this->jangoMail->setError($e->getMessage());
+            $this->jangoMail->addEmailLog($this->email, 'ERROR');
             throw new CampaignException($e->getMessage(), $e->getCode(), $e);
         }
         $this->jangoMail->addEmailLog($this->email, $result ? 'SUCCESS' : 'ERROR');
