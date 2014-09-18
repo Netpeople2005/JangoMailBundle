@@ -28,7 +28,7 @@ class DefaultController extends Controller
     {
         $logs = $this->getDoctrine()
                 ->getRepository('JangoMailBundle:EmailLogs')
-                ->findAll();
+                ->findBy(array(), array('id' => 'DESC'));
 
         return array(
             'logs' => $logs

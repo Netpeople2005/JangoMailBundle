@@ -1,34 +1,68 @@
-<div class="modal hide" id="mi_modal" style="width: 800px;margin-left: -400px;">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">×</button>
-        <h1>Asunto <small>{{ log.email.subject }}</small></h1>
-    </div>
-    <div class="modal-body">
-        <fieldset>
-            <legend>Mensaje</legend>
-            {% autoescape false %}
-                {{ log.email.message }}
-            {% endautoescape %}
-        </fieldset>
-        <fieldset>
-            <legend>Destinatarios</legend>
-            <ul>
-            {% for des in log.email.recipients %}
-                    <li>{{ des.email }} - {{ des.name }}</li>
-            {% endfor %}
-            </ul>
-        </fieldset>
-        <fieldset>
-            <legend>Opciones</legend>
-            {% for name, val in log.email.options %}
-                    <li>{{ name }} => {{ val }}</li>
-            {% endfor %}
-        </fieldset>
-    </div>
-    <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">Cerrar</a>
-    </div>
-</div>
+{% embed '@JangoMail/bs3/modal.html.twig' with { id: 'mi_modal' } %}
+    {% block header %}
+        <small>{{ log.email.emailID }}</small>
+        <br>
+        {{ log.email.subject }}
+        <br>
+        <small>{{ log.datetime|date('d-m-Y H:i:s') }}</small>
+    {% endblock %}
+
+    {% block body %}
+        <div class="row">
+            <div class="col-sm-7">
+                {% embed '@JangoMail/bs3/panel.html.twig' %}
+                    {% block header %}Destinatarios{% endblock %}
+                    {% block body %}
+                        <ul>
+                            {% for des in log.email.recipients %}
+                                <li>{{ des.email }} {% if des.name %}({{ des.name }}){% endif %}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endblock %}
+                {% endembed %}
+                {% if log.email.groups|length %}
+                    {% embed '@JangoMail/bs3/panel.html.twig' %}
+                        {% block header %}Grupos{% endblock %}
+                        {% block body %}
+                            <ul>
+                                {% for group in log.email.groups %}
+                                    <li>{{ group.name }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endblock %}
+                    {% endembed %}
+                {% endif %}
+            </div>
+            <div class="col-sm-5">
+                {#{% embed '@JangoMail/bs3/panel.html.twig' %}#}
+                {#{% block header %}Opciones{% endblock %}#}
+                {#{% block body %}#}
+                {% embed '@JangoMail/bs3/detail.html.twig' %}
+                    {% from '@JangoMail/bs3/detail.html.twig' import item, header %}
+                    {% block header %}Opciones{% endblock %}
+                    {% block body %}
+                        {% for name, value in log.email.options %}
+                            {{ item(name, value) }}
+                        {% endfor %}
+                    {% endblock %}
+                {% endembed %}
+                {#{% endblock %}#}
+                {#{% endembed %}#}
+            </div>
+        </div>
+        {% embed '@JangoMail/bs3/panel.html.twig' %}
+            {% block header %}Contenido{% endblock %}
+            {% block body %}
+                {{ log.email.message|raw }}
+            {% endblock %}
+        {% endembed %}
+        {{ dump(log) }}
+    {% endblock %}
+
+    {% block footer %}
+        <a href="#" class="btn btn-default" data-dismiss="modal">Cerrar</a>
+    {% endblock %}
+{% endembed %}
 <script type="text/javascript">
     $("#mi_modal").modal();
 </script>

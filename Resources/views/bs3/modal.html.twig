@@ -1,0 +1,27 @@
+{% set modal_header = block('header') %}
+{% set modal_body = block('body') %}
+{% set modal_footer = block('footer') %}
+
+<div id="{{ id|default }}" class="modal fade">
+    <div class="modal-dialog modal-{{ size|default('lg') }}">
+        <div class="modal-content">
+            {% if modal_header is not empty %}
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3>{{ modal_header|raw }}</h3>
+                </div>
+            {% endif %}
+            {% if modal_body is not empty %}
+                <div class="modal-body">
+                    {{ modal_body|raw }}
+                    <br/>
+                </div>
+            {% endif %}
+            {% if modal_footer is not empty %}
+                <div class="modal-footer">
+                    {{ modal_footer|raw }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -1,47 +1,54 @@
-{% extends "JangoMailBundle::base.html.twig" %}
-{% block cuerpo %}
-<div class="page-header">
-    <h1>Registros de Correos Emviados</h1>
-</div>
-{% for tipo, mensajes in app.session.flashBag %}
-    {% for mensaje in mensajes %}
-    <div class="alert alert-{{ tipo }}">{{ mensaje }}</div>
-    {% endfor %}
-{% endfor %}
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Asunto del Mensaje</th>
-            <th>Fecha del Envio</th>
-            <th>Resultado del Envio</th>
-            <th>Error ( De Haber alguno )</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for log in logs %}
-            <tr>
-                <td>{{ log.id }}</td>
-                <td>{{ log.email.subject }}</td>
-                <td>{{ log.datetime.format('d-m-Y H:i:s') }}</td>
-                <td>{{ log.result }}</td>
-                <td>{{ log.error }}</td>
-                <td><a class="detalle" href="{{ path('JangoMailBundle_logs_view',{ 'id': log.id }) }}">Detalle</a></td>
-                <!--<td><a href="{ { path('JangoMailBundle_Grupos_editar',{ 'grupoID': grupo.groupID }) }}">Editar</a></td>-->
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="100">No hay Registros</td>
-            </tr>
+{% extends "JangoMailBundle:bs3:base.html.twig" %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Registros de Correos Enviados</h1>
+    </div>
+    {% for tipo, mensajes in app.session.flashBag %}
+        {% for mensaje in mensajes %}
+            <div class="alert alert-{{ tipo }}">{{ mensaje }}</div>
         {% endfor %}
-    </tbody>
-</table>
+    {% endfor %}
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th style="width: 60%">Asunto del Mensaje</th>
+                <th style="width: 16%">Fecha del Envio</th>
+                <th>Error</th>
+            </tr>
+        </thead>
+        <tbody style="font-size: 90%">
+            {% for log in logs %}
+                <tr>
+                    <td>{{ log.id }}</td>
+                    <td {#style="font-size: 90%"#}>
+                        <a class="detalle" href="{{ path('JangoMailBundle_logs_view',{ 'id': log.id }) }}">
+                            {{ log.email.subject }}
+                        </a>
+                        <span class="label label-{{ log.error ? 'danger' : (log.email.emailID == '- TEST -') ? 'info' : 'success' }}">
+                            {{- log.email.emailID|default('ERROR') -}}
+                        </span>
+                    </td>
+                    <td>{{ log.datetime.format('d-m-Y H:i:s') }}</td>
+                    <td class="text-danger">
+                        {{ log.error ? (log.error|split(':', 2))[1]|default(log.error) : '' }}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="100">No hay Registros</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
+
 {% block javascripts %}
-{{ parent() }}
+    {{ parent() }}
     <script type="text/javascript">
-        $(function(){
-            $("a.detalle").on('click',function(event){
+        $(function () {
+            $("a.detalle").on('click', function (event) {
                 event.preventDefault();
                 $("#ajax").load($(this).attr('href'))
             })
