@@ -11,28 +11,41 @@
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
-                <th>ID</th>
-                <th style="width: 60%">Asunto del Mensaje</th>
-                <th style="width: 16%">Fecha del Envio</th>
-                <th>Error</th>
+                <th class="col-xs-1">ID</th>
+                <th class="col-xs-8 col-md-9">Asunto del Mensaje</th>
+                <th class="col-xs-3 col-md-2">Fecha del Envio</th>
             </tr>
         </thead>
         <tbody style="font-size: 90%">
             {% for log in logs %}
+                {% if log.error %}
+                    {%- set popover -%}
+                    <span class="text-danger">
+                        {{- (log.error|split(':', 2))[1]|default(log.error) -}}
+                    </span>
+                    {%- endset -%}
+                    {%- set text_type = 'danger' -%}
+                {% else %}
+                    {%- set text_type = (log.email.emailID == '- TEST -') ? 'info' : 'success' -%}
+                    {%- set popover -%}
+                    <span class="text-{{ text_type }}">
+                        {{- (log.email.emailID == '- TEST -') ? 'El correo no se Envió Realmente' : '' -}}
+                    </span>
+                    {%- endset -%}
+                {% endif %}
                 <tr>
                     <td>{{ log.id }}</td>
                     <td {#style="font-size: 90%"#}>
                         <a class="detalle" href="{{ path('JangoMailBundle_logs_view',{ 'id': log.id }) }}">
                             {{ log.email.subject }}
                         </a>
-                        <span class="label label-{{ log.error ? 'danger' : (log.email.emailID == '- TEST -') ? 'info' : 'success' }}">
+                        <span {% if popover %}data-toggle="popover" data-trigger="hover"
+                              data-content="{{ popover|escape }}"{% endif %}
+                              class="label label-{{ text_type }}">
                             {{- log.email.emailID|default('ERROR') -}}
                         </span>
                     </td>
                     <td>{{ log.datetime.format('d-m-Y H:i:s') }}</td>
-                    <td class="text-danger">
-                        {{ log.error ? (log.error|split(':', 2))[1]|default(log.error) : '' }}
-                    </td>
                 </tr>
             {% else %}
                 <tr>
@@ -51,7 +64,15 @@
             $("a.detalle").on('click', function (event) {
                 event.preventDefault();
                 $("#ajax").load($(this).attr('href'))
-            })
+            });
+
+            $('[data-toggle="popover"]').popover({
+                placement: 'top',
+                html: true
+//                content: function(a, b){
+//                    console.log(a, b)
+//                }
+            });
         });
     </script>
 {% endblock %}

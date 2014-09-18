@@ -1,23 +1,37 @@
-{% extends "JangoMailBundle::base.html.twig" %}
-{% block cuerpo %}
-<h1>Lista de Grupos en Jango</h1>
-{% include "JangoMailBundle::flashes.html.twig" %}
-    <p><a href="{{ path("JangoMailBundle_Grupos_crear") }}" class="btn btn-primary">Crear Grupo</a></p>
-<table class="table table-bordered table-striped">
-    <tbody>
-        {% for grupo in grupos %}
+{% extends "@JangoMail/bs3/base.html.twig" %}
+
+{% block page_header %}Grupos en Jango{% endblock %}
+
+{% block content %}
+    <p>
+        <a href="{{ path("JangoMailBundle_Grupos_crear") }}" class="btn btn-primary">Crear Grupo</a>
+    </p>
+    <table class="table table-bordered table-striped">
+        <thead>
             <tr>
-                <td>{{ grupo.groupID }}</td>
-                <td>{{ grupo.name }}</td>
-                <td>{{ grupo.memberCount }} Miembros</td>
-                <td><a href="{{ path('JangoMailBundle_Grupos_Miembros',{ 'grupoID': grupo.groupID }) }}">Ver Miembros</a></td>
-                <!--<td><a href="{ { path('JangoMailBundle_Grupos_editar',{ 'grupoID': grupo.groupID }) }}">Editar</a></td>-->
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Cantidad de Miembros</th>
+                <th></th>
             </tr>
-        {% else %}
-            <tr>
-                <td colspan="100">No hay Grupos</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for grupo in grupos %}
+                <tr>
+                    <td>{{ grupo.groupID }}</td>
+                    <td>
+                        <a href="{{ path('JangoMailBundle_Grupos_editar',{ 'grupoID': grupo.groupID }) }}">{{ grupo.name }}</a>
+                    </td>
+                    <td>{{ grupo.memberCount }} Miembros</td>
+                    <td><a href="{{ path('JangoMailBundle_Grupos_Miembros',{ 'grupoID': grupo.groupID }) }}">Ver
+                            Miembros</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="100">No hay Grupos</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

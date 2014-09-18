@@ -59,7 +59,9 @@
         {% embed '@JangoMail/bs3/panel.html.twig' %}
             {% block header %}Contenido{% endblock %}
             {% block body %}
-                {{ log.email.message|raw }}
+                <div style="overflow: auto">
+                    {{ log.email.message|raw }}
+                </div>
             {% endblock %}
         {% endembed %}
     {% endblock %}

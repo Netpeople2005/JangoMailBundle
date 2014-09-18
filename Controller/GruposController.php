@@ -70,6 +70,7 @@ class GruposController extends Controller
         $adminGrupos = $this->get('jango_mail.group_admin');
 
         $grupo = $adminGrupos->getById($grupoID);
+        $adminGrupos->getMembers($grupo);
 
         $form = $this->createForm(new GroupType(), clone $grupo);
 

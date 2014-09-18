@@ -20,7 +20,7 @@ class GroupAdmin
     /**
      * Contiene el servicio JangoMail
      *
-     * @var JangoMail 
+     * @var JangoMail
      */
     protected $jangoMail;
 
@@ -31,7 +31,9 @@ class GroupAdmin
 
     /**
      * Agrega un Grupo a jango
+     *
      * @param Group $group
+     *
      * @return boolean|Group el grupo creado ó false si hay error
      */
     public function add(Group $group)
@@ -55,18 +57,20 @@ class GroupAdmin
         } catch (SoapFault $e) {
             throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
         }
+
         return false;
     }
 
     /**
      * Este metodo no funciona del todo bien, ya que está creando un nuevo grupo
      * en ves de editar. No usar por ahora
-     * 
+     *
      * @deprecated
      *
      * @param Group $group
-     * @param type $newName
-     * @return boolean 
+     * @param type  $newName
+     *
+     * @return boolean
      */
     public function edit(Group $group, $newName)
     {
@@ -82,12 +86,15 @@ class GroupAdmin
         } catch (SoapFault $e) {
             throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
         }
+
         return false;
     }
 
     /**
      * Obtiene un grupo a traves del ID del mismo.
+     *
      * @param string $groupID
+     *
      * @return Group|null el grupo encontrado ó nulo si no existe.
      */
     public function getById($groupID)
@@ -97,12 +104,15 @@ class GroupAdmin
                 return $group;
             }
         }
+
         return null;
     }
 
     /**
      * Obtiene un grupo a traves del nombre del mismo.
+     *
      * @param string $name
+     *
      * @return Group|null el grupo encontrado ó nulo si no existe.
      */
     public function getByName($name)
@@ -112,13 +122,16 @@ class GroupAdmin
                 return $group;
             }
         }
+
         return null;
     }
 
     /**
      * Agrega Miembros a un grupo.
+     *
      * @param Group $group clase grupo con los miembros establecidos.
-     * @return boolean 
+     *
+     * @return boolean
      */
     public function addMembers(Group $group)
     {
@@ -153,6 +166,7 @@ class GroupAdmin
                 return true;
             } else {
                 throw new JangoMailException("No se Pudieron Guardar todos los Destinatarios");
+
                 return false;
             }
         } else {
@@ -162,8 +176,10 @@ class GroupAdmin
 
     /**
      * Devuelve el numero de miebros que posee un grupo
+     *
      * @param Group $group
-     * @return boolean 
+     *
+     * @return boolean
      */
     public function countMembers(Group $group)
     {
@@ -171,39 +187,47 @@ class GroupAdmin
             $response = $this->jangoMail->call('GetGroupMemberCount', array(
                 'GroupName' => $group->getName(),
             ));
+
             return (int) $response->GetGroupMemberCountResult;
         } catch (SoapFault $e) {
             throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
         }
+
         return false;
     }
 
     /**
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getAll()
     {
-        try {
-            $response = $this->jangoMail->call('Groups_GetList_XML');
-            $xml = $response->Groups_GetList_XMLResult->any;
-            $groups = array();
-            foreach (simplexml_load_string($xml)->Groups as $e) {
-                $group = new Group();
-                $groups[] = $group->setName((string) $e->GroupName)
+        static $items = null;
+
+        if (null === $items) {
+            try {
+                $response = $this->jangoMail->call('Groups_GetList_XML');
+                $xml = $response->Groups_GetList_XMLResult->any;
+                $groups = array();
+                foreach (simplexml_load_string($xml)->Groups as $e) {
+                    $group = new Group();
+                    $groups[] = $group->setName((string) $e->GroupName)
                         ->setGroupID((string) $e->GroupID)
                         ->setMemberCount((string) $e->MemberCount);
+                }
+
+                $items = $groups;
+            } catch (Exception $e) {
+                throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
             }
-            return $groups;
-        } catch (Exception $e) {
-            throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
         }
-        return false;
+
+        return $items;
     }
 
     /**
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getMembers(Group $group)
     {
@@ -216,17 +240,21 @@ class GroupAdmin
                 $recipient = new Recipient((string) $e->emailaddress);
                 $group->addRecipient($recipient);
             }
+
             return $group;
         } catch (Exception $e) {
             throw new JangoMailException($e->getMessage(), $e->getCode(), $e);
         }
+
         return false;
     }
 
     /**
      * Crea y agrega miembros a un grupo buscando por ID si este no existe.
      * si existe solo agrega miembros nuevos.
+     *
      * @param \Netpeople\JangoMailBundle\Groups\Group $group
+     *
      * @return \Netpeople\JangoMailBundle\Groups\Group
      */
     public function addIfNotExist(Group $group)
@@ -244,7 +272,9 @@ class GroupAdmin
     /**
      * Crea y agrega miembros a un grupo buscando por el Nombre si este no existe.
      * si existe solo agrega miembros nuevos.
+     *
      * @param \Netpeople\JangoMailBundle\Groups\Group $group
+     *
      * @return \Netpeople\JangoMailBundle\Groups\Group
      */
     public function addIfNameNotExist(Group $group)

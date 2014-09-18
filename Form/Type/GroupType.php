@@ -10,25 +10,32 @@ use Symfony\Component\Form\FormBuilderInterface;
  *
  * @author manuel
  */
-class GroupType extends AbstractType {
+class GroupType extends AbstractType
+{
 
-    public function buildForm(FormBuilderInterface $form, array $opciones) {
+    public function buildForm(FormBuilderInterface $form, array $opciones)
+    {
 
         $form->add('name', 'text', array(
-                    'label' => 'Nombre del Grupo',
-                ))
-                ->add('recipients', 'collection', array(
-                    'label' => 'Destinatario',
-                    'type' => new RecipientType(),
-                ));
+            'label' => 'Nombre del Grupo',
+        ))
+            ->add('recipients', 'collection', array(
+                'label' => 'Destinatario',
+                'type' => new RecipientType(),
+            ))
+            ->add('Enviar', 'submit', array(
+                'attr' => array('class' => 'btn-primary')
+            ));;
     }
 
     //put your code here
-    public function getName() {
+    public function getName()
+    {
         return 'grupo';
     }
 
-    public function getDefaultOptions(array $opciones) {
+    public function getDefaultOptions(array $opciones)
+    {
         return array(
             'data_class' => 'Netpeople\JangoMailBundle\Groups\Group'
         );
