@@ -1,9 +1,21 @@
-{% extends "JangoMailBundle::base.html.twig" %}
-{% block cuerpo %}
-    <h1>Probar envio de Correo a un grupo</h1>
-    {% include "JangoMailBundle::flashes.html.twig" %}
-    <form action="" method="post">
-        {{ form_widget(form) }}
-            <input type="submit" class="btn btn-primary" value="Enviar Correo" />
-    </form>
+{% extends "@JangoMail/bs3/base.html.twig" %}
+
+{% block page_header %}Probar envio de Correo a un grupo{% endblock %}
+
+{% form_theme form '@JangoMail/Form/form_bootstrap_3.2.x_horizontal_layout.html.twig' %}
+{% form_theme form.recipients _self %}
+
+{% block content %}
+    {{ form_start(form) }}
+    {{ form_row(form.subject) }}
+    {{ form_widget(form.recipients) }}
+    {{ form_row(form.message) }}
+    {{ form_end(form) }}
+{% endblock %}
+
+
+{% block recipient_row %}
+    {{ form_widget(form) }}
+    {#{{ form_row(form.email) }}#}
+    {#{{ form_row(form.name) }}#}
 {% endblock %}
