@@ -8,6 +8,12 @@
     {% endblock %}
 
     {% block body %}
+        {% if log.error is not empty %}
+            {% embed '@JangoMail/bs3/panel.html.twig' with { type : 'danger' } %}
+                {% block header %}Error{% endblock %}
+                {% block body %}{{ log.error }}{% endblock %}
+            {% endembed %}
+        {% endif %}
         <div class="row">
             <div class="col-sm-7">
                 {% embed '@JangoMail/bs3/panel.html.twig' %}
@@ -56,7 +62,6 @@
                 {{ log.email.message|raw }}
             {% endblock %}
         {% endembed %}
-        {{ dump(log) }}
     {% endblock %}
 
     {% block footer %}

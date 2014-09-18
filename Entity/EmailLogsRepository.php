@@ -3,6 +3,7 @@
 namespace Netpeople\JangoMailBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
 
 /**
  * EmailLogsRepository
@@ -12,5 +13,10 @@ use Doctrine\ORM\EntityRepository;
  */
 class EmailLogsRepository extends EntityRepository
 {
-    
+    public function getQueryAll($order = 'DESC')
+    {
+        return $this->createQueryBuilder('logs')
+            ->orderBy('logs.id', $order)
+            ;
+    }
 }

@@ -1,5 +1,9 @@
 {% extends "JangoMailBundle:bs3:base.html.twig" %}
 
+{% set paginate %}
+{{ knp_pagination_render(logs, '@KnpPaginator/Pagination/twitter_bootstrap_v3_pagination.html.twig') }}
+{% endset %}
+
 {% block content %}
     <div class="page-header">
         <h1>Registros de Correos Enviados</h1>
@@ -9,6 +13,7 @@
             <div class="alert alert-{{ tipo }}">{{ mensaje }}</div>
         {% endfor %}
     {% endfor %}
+    {#{{ paginate }}#}
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
@@ -42,6 +47,7 @@
             {% endfor %}
         </tbody>
     </table>
+    {{ paginate }}
 {% endblock %}
 
 {% block javascripts %}

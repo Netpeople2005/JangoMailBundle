@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use \Netpeople\JangoMailBundle\Form\Type\EmailType;
 use Netpeople\JangoMailBundle\Emails\Email;
 use Netpeople\JangoMailBundle\Recipients\Recipient;
+use Symfony\Component\HttpFoundation\Request;
 
 //use Netpeople\JangoMailBundle\Groups\Group;
 
@@ -24,14 +25,16 @@ class DefaultController extends Controller
     /**
      * @Template()
      */
-    public function logsAction()
+    public function logsAction(Request $request)
     {
-        $logs = $this->getDoctrine()
-                ->getRepository('JangoMailBundle:EmailLogs')
-                ->findBy(array(), array('id' => 'DESC'));
+        $query = $this->getDoctrine()
+            ->getRepository('JangoMailBundle:EmailLogs')
+            ->getQueryAll();
+
+        $items = $this->get('knp_paginator')->paginate($query, $request->get('page', 1));
 
         return array(
-            'logs' => $logs
+            'logs' => $items,
         );
     }
 
@@ -41,8 +44,8 @@ class DefaultController extends Controller
     public function logAction($id)
     {
         $log = $this->getDoctrine()
-                ->getRepository('JangoMailBundle:EmailLogs')
-                ->findOneById($id);
+            ->getRepository('JangoMailBundle:EmailLogs')
+            ->findOneById($id);
 
         return array(
             'log' => $log
@@ -65,7 +68,8 @@ class DefaultController extends Controller
         if ($form->isValid()) {
             $email = $form->getData();
             if ($email = $this->get('jango_mail')->send($email)) {
-                $this->get('session')->getFlashBag()->add('success', "Se envió el Correo Perfectamente (ID: {$email->getEmailID()})");
+                $this->get('session')->getFlashBag()
+                    ->add('success', "Se envió el Correo Perfectamente (ID: {$email->getEmailID()})");
             } else {
                 $this->get('session')->getFlashBag()->add('error', $this->get('jango_mail')->getError());
             }
@@ -78,7 +82,7 @@ class DefaultController extends Controller
 
     public function reportesAction()
     {
-        
+
     }
 
 }
