@@ -1,10 +1,30 @@
 {% extends "JangoMailBundle:bs3:base.html.twig" %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /*table tbody td .label.status{width: 90%}*/
+        .popover {
+            max-width: 600px
+        }
+
+        .popover ul {
+            margin: 0px;
+            padding: 0 0 0 6px
+        }
+
+        .log-info{margin-top: 10px; font-size: 90%}
+        .log-info span{}
+    </style>
+{% endblock %}
+
 {% set paginate %}
 {{ knp_pagination_render(logs, '@KnpPaginator/Pagination/twitter_bootstrap_v3_pagination.html.twig') }}
 {% endset %}
 
 {% block page_header %}Correos Enviados{% endblock %}
+
+{% from _self import label %}
 
 {% block content %}
     {#{{ paginate }}#}
@@ -16,34 +36,67 @@
                 <th class="col-xs-3 col-md-2">Fecha del Envio</th>
             </tr>
         </thead>
-        <tbody style="font-size: 90%">
+        <tbody {#style="font-size: 95%"#}>
             {% for log in logs %}
-                {% if log.error %}
-                    {%- set popover -%}
-                    <span class="text-danger">
-                        {{- (log.error|split(':', 2))[1]|default(log.error) -}}
-                    </span>
-                    {%- endset -%}
-                    {%- set text_type = 'danger' -%}
-                {% else %}
-                    {%- set text_type = (log.email.emailID == '- TEST -') ? 'info' : 'success' -%}
-                    {%- set popover -%}
-                    <span class="text-{{ text_type }}">
-                        {{- (log.email.emailID == '- TEST -') ? 'El correo no se Envió Realmente' : '' -}}
-                    </span>
-                    {%- endset -%}
-                {% endif %}
                 <tr>
                     <td>{{ log.id }}</td>
-                    <td {#style="font-size: 90%"#}>
+                    <td>
                         <a class="detalle" href="{{ path('JangoMailBundle_logs_view',{ 'id': log.id }) }}">
                             {{ log.email.subject }}
                         </a>
-                        <span {% if popover %}data-toggle="popover" data-trigger="hover"
-                              data-content="{{ popover|escape }}"{% endif %}
-                              class="label label-{{ text_type }}">
-                            {{- log.email.emailID|default('ERROR') -}}
-                        </span>
+
+                        <div class="log-info" {#class="pull-right"#}>
+
+                            {# Muestra el Id generado por Jango, o el error si no se puedo enviar el correo #}
+                            {% if log.error %}
+
+                                {%- set popover -%}
+                                <span class="text-danger">{{- (log.error|split(':', 2))[1]|default(log.error) -}}</span>
+                                {%- endset -%}
+
+                                {{ label('ERROR', 'remove', 'danger', popover) }}
+
+                            {% else %}
+
+                                {%- set type = (log.email.emailID == '- TEST -') ? 'warning' : 'success' -%}
+                                {#{%- set popover -%}#}
+                                {#<span class="text-{{ type }}">{{- type = 'warning' ? '' -}}</span>#}
+                                {#{%- endset -%}#}
+
+                                {{ label(log.email.emailID|default('ERROR'), 'ok', type) }}
+
+                            {% endif %}
+
+                            {# Muestra los destinatarios #}
+                            {%- set popover -%}
+                            <ul>
+                                {%- for item in log.email.recipients -%}
+                                    <li>{{ item.email }}</li>
+                                {%- endfor -%}
+                            </ul>
+                            {%- endset -%}
+                            {{ label('', 'user', 'info', popover) }}
+
+                            {# Muestra las opciones seteadas al enviar el correo #}
+                            {% if log.email.options|length %}
+                                {%- set popover -%}
+                                {% embed '@JangoMail/bs3/detail.html.twig' %}
+                                    {% from '@JangoMail/bs3/detail.html.twig' import item %}
+                                    {#{% block header %}{% endblock %}#}
+                                    {% block body %}
+                                        {%- for label, value in log.email.options -%}
+                                            {{ item(label, value) }}
+                                        {%- endfor -%}
+                                    {% endblock %}
+                                {% endembed %}
+                                {%- endset -%}
+
+                                {{ label('', 'cog', 'default', popover) }}
+
+                            {% endif %}
+
+                        </div>
+
                     </td>
                     <td>{{ log.datetime.format('d-m-Y H:i:s') }}</td>
                 </tr>
@@ -68,7 +121,8 @@
 
             $('[data-toggle="popover"]').popover({
                 placement: 'top',
-                html: true
+                html: true,
+                trigger: 'click hover'
 //                content: function(a, b){
 //                    console.log(a, b)
 //                }
@@ -76,3 +130,14 @@
         });
     </script>
 {% endblock %}
+
+{% macro label(text, icon, type, popover, trigger) -%}
+    <span {% if popover -%}
+        data-toggle="popover"
+        {% if trigger -%}data-trigger="{{- trigger -}}"{%- endif %}
+        data-content="{{- popover|escape -}}"{%- endif %}
+            class="label label-{{ type|default('default') }}">
+        {%- if icon -%}<i class="glyphicon glyphicon-{{ icon }}"></i>{%- endif -%}
+        {%- if text %} {{ text }}{% endif -%}
+    </span>
+{%- endmacro %}
