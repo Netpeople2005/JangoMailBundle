@@ -4,6 +4,8 @@ namespace Netpeople\JangoMailBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Reference;
 
 class FOSJangoPass implements CompilerPassInterface
 {
@@ -30,11 +32,11 @@ class FOSJangoPass implements CompilerPassInterface
         $definition->setClass('%jango_mail_fos.class%');
 
         $definition->setArguments(array(
-            '@jango_mail',
-            "@router",
-            "@twig",
+            new Reference('jango_mail'),
+            new Reference("router"),
+            new Reference("twig"),
             "%jango_mail_fos.config%",
-            "@?logger",
+            new Reference("logger", ContainerInterface::IGNORE_ON_INVALID_REFERENCE),
         ));
     }
 
