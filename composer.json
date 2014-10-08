@@ -1,27 +1,23 @@
 {
     "name": "optime/jangomail",
+    "type": "symfony-bundle",
     "description": "Bundle para envio de correos por Jango",
+    "keywords": ["bundle", "jango", "email"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Manuel Aguirre",
+            "email": "programador.manuel@gmail.com",
+            "homepage": "http://manuelj555.github.io/"
+        }
+    ],
     "require": {
         "php": ">=5.3.3",
+        "symfony/symfony": "~2.3",
         "symfony/framework-bundle": "~2.3",
         "knplabs/knp-paginator-bundle": "~2.4"
     },
-    "scripts": {
-        "post-install-cmd": [
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
-        ],
-        "post-update-cmd": [
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
-        ]
-    },
     "autoload": {
-        "psr-0": { "Netpeople\\JangoMailBundle": "" }
-    },
-    "target-dir": "Netpeople/JangoMailBundle"
+        "psr-4": { "Netpeople\\JangoMailBundle": "" }
+    }
 }
