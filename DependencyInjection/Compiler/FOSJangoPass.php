@@ -13,7 +13,6 @@ class FOSJangoPass implements CompilerPassInterface
         if (!$container->hasDefinition('fos_user.mailer.default')) {
             return;
         }
-
         $container->setParameter('jango_mail_fos.config', array(
             'template' => array(
                 'confirmation' => '%fos_user.registration.confirmation.template%',
@@ -24,17 +23,14 @@ class FOSJangoPass implements CompilerPassInterface
                 'resetting' => '%fos_user.resetting.email.from_email%',
             ),
         ));
-
         $definition = $container->getDefinition('fos_user.mailer.default');
-
         $definition->setClass('%jango_mail_fos.class%');
-
         $definition->setArguments(array(
-            '@jango_mail',
-            "@router",
-            "@twig",
+            new Reference('jango_mail'),
+            new Reference("router"),
+            new Reference("twig"),
             "%jango_mail_fos.config%",
-            "@?logger",
+            new Reference("logger", ContainerInterface::IGNORE_ON_INVALID_REFERENCE),
         ));
     }
 
