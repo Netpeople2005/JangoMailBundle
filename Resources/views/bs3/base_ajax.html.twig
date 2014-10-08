@@ -1,0 +1,7 @@
+<!--{% block stylesheets %}{% endblock %}-->
+{% block body %}
+    <div class="page-header"><h1>{% block page_header %}{% endblock %}</h1></div>
+    {% include "@JangoMail/flashes.html.twig" %}
+    <article>{% block content %}{% endblock %}</article>
+{% endblock %}
+{% block javascripts %}{% endblock %}

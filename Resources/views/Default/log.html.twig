@@ -1,77 +1,82 @@
-{% embed '@JangoMail/bs3/modal.html.twig' with { id: 'mi_modal' } %}
-    {% block header %}
-        <small>{{ log.email.emailID }}</small>
-        <br>
-        {{ log.email.subject }}
-        <br>
-        <small>{{ log.datetime|date('d-m-Y H:i:s') }}</small>
-    {% endblock %}
+{% extends app.request.isXmlHttpRequest() ? 'JangoMailBundle:bs3:base_ajax_modal.html.twig' : 'JangoMailBundle:bs3:base.html.twig' %}
 
-    {% block body %}
-        {% if log.error is not empty %}
-            {% embed '@JangoMail/bs3/panel.html.twig' with { type : 'danger' } %}
-                {% block header %}Error{% endblock %}
-                {% block body %}{{ log.error }}{% endblock %}
+{% block page_header %}
+    {{ log.email.subject }}
+    <br>
+    <small>{{ log.email.emailID }}</small>
+    <small>{{ log.datetime|date('d-m-Y H:i:s') }}</small>
+{% endblock %}
+
+{% block content %}
+    {% if log.error is not empty %}
+        {% embed '@JangoMail/bs3/panel.html.twig' with { type : 'danger' } %}
+            {% block header %}Error{% endblock %}
+            {% block body %}{{ log.error }}{% endblock %}
+        {% endembed %}
+    {% endif %}
+    <div class="row">
+        <div class="col-sm-7">
+            {% embed '@JangoMail/bs3/panel.html.twig' %}
+                {% block header %}Destinatarios{% endblock %}
+                {% block body %}
+                    <ul>
+                        {% for des in log.email.recipients %}
+                            <li>{{ des.email }} {% if des.name %}({{ des.name }}){% endif %}</li>
+                        {% endfor %}
+                    </ul>
+                {% endblock %}
             {% endembed %}
-        {% endif %}
-        <div class="row">
-            <div class="col-sm-7">
+            {% if log.email.groups|length %}
                 {% embed '@JangoMail/bs3/panel.html.twig' %}
-                    {% block header %}Destinatarios{% endblock %}
+                    {% block header %}Grupos{% endblock %}
                     {% block body %}
                         <ul>
-                            {% for des in log.email.recipients %}
-                                <li>{{ des.email }} {% if des.name %}({{ des.name }}){% endif %}</li>
+                            {% for group in log.email.groups %}
+                                <li>{{ group.name }}</li>
                             {% endfor %}
                         </ul>
                     {% endblock %}
                 {% endembed %}
-                {% if log.email.groups|length %}
-                    {% embed '@JangoMail/bs3/panel.html.twig' %}
-                        {% block header %}Grupos{% endblock %}
-                        {% block body %}
-                            <ul>
-                                {% for group in log.email.groups %}
-                                    <li>{{ group.name }}</li>
-                                {% endfor %}
-                            </ul>
-                        {% endblock %}
-                    {% endembed %}
-                {% endif %}
-            </div>
-            <div class="col-sm-5">
-                {#{% embed '@JangoMail/bs3/panel.html.twig' %}#}
-                {#{% block header %}Opciones{% endblock %}#}
-                {#{% block body %}#}
-                {% embed '@JangoMail/bs3/detail.html.twig' %}
-                    {% from '@JangoMail/bs3/detail.html.twig' import item, header %}
-                    {% block header %}Opciones{% endblock %}
-                    {% block body %}
-                        {% for name, value in log.email.options %}
-                            {{ item(name, value) }}
-                        {% endfor %}
-                    {% endblock %}
-                {% endembed %}
-                {#{% endblock %}#}
-                {#{% endembed %}#}
-            </div>
+            {% endif %}
         </div>
-        {% embed '@JangoMail/bs3/panel.html.twig' %}
-            {% block header %}Contenido{% endblock %}
-            {% block body %}
-                <div style="overflow: auto">
-                    {{ log.email.message|raw }}
-                </div>
-            {% endblock %}
-        {% endembed %}
-    {% endblock %}
+        <div class="col-sm-5">
+            {#{% embed '@JangoMail/bs3/panel.html.twig' %}#}
+            {#{% block header %}Opciones{% endblock %}#}
+            {#{% block body %}#}
+            {% embed '@JangoMail/bs3/detail.html.twig' %}
+                {% from '@JangoMail/bs3/detail.html.twig' import item, header %}
+                {% block header %}Opciones{% endblock %}
+                {% block body %}
+                    {% for name, value in log.email.options %}
+                        {{ item(name, value) }}
+                    {% endfor %}
+                {% endblock %}
+            {% endembed %}
+            {#{% endblock %}#}
+            {#{% endembed %}#}
+        </div>
+    </div>
+    {% embed '@JangoMail/bs3/panel.html.twig' %}
+        {% block header %}Contenido{% endblock %}
+        {% block body %}
+            <div style="overflow: auto">
+                {{ log.email.message|raw }}
+            </div>
+        {% endblock %}
+    {% endembed %}
 
-    {% block footer %}
-        <a href="#" class="btn btn-default" data-dismiss="modal">Cerrar</a>
-    {% endblock %}
-{% endembed %}
-<script type="text/javascript">
-    $("#mi_modal").modal();
-</script>
+{% endblock %}
 
+{% block footer %}
+    <a href="#" class="btn btn-default" data-dismiss="modal">Cerrar</a>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $("#{{ modal_id }}").modal();
+    </script>
+{% endblock %}
+
+{% set modal_id = 'mi_modal' %}
 
