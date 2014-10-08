@@ -14,8 +14,12 @@
         }
 
         .log-info { margin-top: 10px; /*font-size: 90%*/ }
+
         .log-info span { }
-        {% if not form.vars.submitted %}#panel-logs-filter .panel-body{display: none}{% endif %}
+
+        {% if not form.vars.submitted %}#panel-logs-filter .panel-body { display: none }
+
+        {% endif %}
     </style>
 {% endblock %}
 
@@ -37,17 +41,11 @@
         {% block body %}
             <div class="row">
                 <div class="col-sm-3">{{ form_row(form.subject) }}</div>
-                <div class="col-sm-2">{{ form_row(form.recipient) }}</div>
-                <div class="col-sm-2">{{ form_row(form.result) }}</div>
-                <div class="col-sm-2">{{ form_row(form.error) }}</div>
-                <div class="col-sm-3">
-                    <label>&nbsp;</label>
-
-                    <div>
-                        {{ form_widget(form.send) }} {{ form_widget(form.clear) }}
-                    </div>
-                </div>
+                <div class="col-sm-3">{{ form_row(form.recipient) }}</div>
+                <div class="col-sm-3">{{ form_row(form.result) }}</div>
+                <div class="col-sm-3">{{ form_row(form.error) }}</div>
             </div>
+            {{ form_widget(form.send) }} {{ form_widget(form.clear) }}
             {{ form_end(form) }}
         {% endblock %}
     {% endembed %}
@@ -152,7 +150,7 @@
 //                }
             });
 
-            $("#toggle-filter").on('click', function(e){
+            $("#toggle-filter").on('click', function (e) {
                 e.preventDefault();
                 $("#panel-logs-filter .panel-body").slideToggle(100);
             });

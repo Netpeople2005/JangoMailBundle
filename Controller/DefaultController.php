@@ -2,6 +2,7 @@
 
 namespace Netpeople\JangoMailBundle\Controller;
 
+use Netpeople\JangoMailBundle\Form\Type\LogsFilterType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use \Netpeople\JangoMailBundle\Form\Type\EmailType;
@@ -27,14 +28,23 @@ class DefaultController extends Controller
      */
     public function logsAction(Request $request)
     {
+        $form = $this->createForm(new LogsFilterType());
+        $form->handleRequest($request);
+        $filters = $form->getData();
+
+        if ($form['clear']->isClicked()) {
+            return $this->redirect($this->generateUrl('JangoMailBundle_logs'));
+        }
+
         $query = $this->getDoctrine()
             ->getRepository('JangoMailBundle:EmailLogs')
-            ->getQueryAll();
+            ->getQueryAll($filters);
 
         $items = $this->get('knp_paginator')->paginate($query, $request->get('page', 1));
 
         return array(
             'logs' => $items,
+            'form' => $form->createView(),
         );
     }
 
