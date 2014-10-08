@@ -12,7 +12,7 @@ Usando composer (Previamente instalado) añadir el paquete al composer.json
 
     {
         "require": {
-            "optime/jangomail": "dev-master"
+            "optime/jangomail": "~2.0"
         }
     }
 
