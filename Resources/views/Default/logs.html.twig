@@ -13,8 +13,9 @@
             padding: 0 0 0 6px
         }
 
-        .log-info{margin-top: 10px; /*font-size: 90%*/}
-        .log-info span{}
+        .log-info { margin-top: 10px; /*font-size: 90%*/ }
+        .log-info span { }
+        {% if not form.vars.submitted %}#panel-logs-filter .panel-body{display: none}{% endif %}
     </style>
 {% endblock %}
 
@@ -25,9 +26,32 @@
 {% block page_header %}Correos Enviados{% endblock %}
 
 {% from _self import label %}
+{% form_theme form '@JangoMail/Form/bootstrap_3_layout.html.twig' %}
 
 {% block content %}
-    {#{{ paginate }}#}
+    {{ form_start(form) }}
+    {% embed '@JangoMail/bs3/panel.html.twig' with {id: 'panel-logs-filter'} %}
+        {% block header %}
+            <a id="toggle-filter" {#class="btn btn-link btn-sm"#} href="#">Filtrar Datos</a>
+        {% endblock %}
+        {% block body %}
+            <div class="row">
+                <div class="col-sm-3">{{ form_row(form.subject) }}</div>
+                <div class="col-sm-2">{{ form_row(form.recipient) }}</div>
+                <div class="col-sm-2">{{ form_row(form.result) }}</div>
+                <div class="col-sm-2">{{ form_row(form.error) }}</div>
+                <div class="col-sm-3">
+                    <label>&nbsp;</label>
+
+                    <div>
+                        {{ form_widget(form.send) }} {{ form_widget(form.clear) }}
+                    </div>
+                </div>
+            </div>
+            {{ form_end(form) }}
+        {% endblock %}
+    {% endembed %}
+
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
@@ -126,6 +150,11 @@
 //                content: function(a, b){
 //                    console.log(a, b)
 //                }
+            });
+
+            $("#toggle-filter").on('click', function(e){
+                e.preventDefault();
+                $("#panel-logs-filter .panel-body").slideToggle(100);
             });
         });
     </script>

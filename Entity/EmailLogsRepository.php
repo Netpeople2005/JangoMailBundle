@@ -4,6 +4,7 @@ namespace Netpeople\JangoMailBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * EmailLogsRepository
@@ -13,10 +14,35 @@ use Doctrine\ORM\Query;
  */
 class EmailLogsRepository extends EntityRepository
 {
-    public function getQueryAll($order = 'DESC')
+    public function getQueryAll($conditions = array(), $order = 'DESC')
     {
-        return $this->createQueryBuilder('logs')
-            ->orderBy('logs.id', $order)
-            ;
+        $builder = $this->createQueryBuilder('logs')
+            ->orderBy('logs.id', $order);
+
+        if (!count($conditions)) {
+            return $builder;
+        }
+
+        if (isset($conditions['result'])) {
+            $builder->andWhere('logs.result LIKE :result')
+                ->setParameter('result', '%' . $conditions['result'] . '%');
+        }
+
+        if (isset($conditions['error'])) {
+            $builder->andWhere('logs.error LIKE :error')
+                ->setParameter('error', '%' . $conditions['error'] . '%');
+        }
+
+        if (isset($conditions['subject'])) {
+            $builder->andWhere('logs.email LIKE :subject')
+                ->setParameter('subject', '%' . $conditions['subject'] . '%');
+        }
+
+        if (isset($conditions['recipient'])) {
+            $builder->andWhere('logs.email LIKE :recipient')
+                ->setParameter('recipient', '%' . $conditions['recipient'] . '%');
+        }
+
+        return $builder;
     }
 }

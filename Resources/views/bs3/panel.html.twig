@@ -1,23 +1,14 @@
-{# views/panel.html.twig #}
-{% set _header  =  block('header') %}
-{% set _body    =  block('body') %}
-{% set _footer  =  block('footer') %}
-
-<div class="panel panel-{{ type|default('default') }}">
-
-    {# 
-        La idea acá es que ningun bloque sea obligatorio
-        Si alguno está vacio o no definido, 
-        simplemente no se cumple la condición y no se imprime el div
-     #}
-
+{% set _header = block('header') %}
+{% set _body = block('body') %}
+{% set _footer = block('footer') %}
+<div class="panel panel-{{ type|default('default') }}" {% if id is defined %}id="{{ id }}"{% endif %}>
     {% if _header is not empty %}
-        <div class="panel-heading">{{ _header|raw }}</div>{% endif %}
-
+        <div class="panel-heading">{{ _header|raw }}</div>
+    {% endif %}
     {% if _body is not empty %}
-        <div class="panel-body">{{ _body|raw }}</div>{% endif %}
-
+        <div class="panel-body">{{ _body|raw }}</div>
+    {% endif %}
     {% if _footer is not empty %}
-        <div class="panel-footer">{{ _footer|raw }}</div>{% endif %}
-
+        <div class="panel-footer">{{ _footer|raw }}</div>
+    {% endif %}
 </div>
